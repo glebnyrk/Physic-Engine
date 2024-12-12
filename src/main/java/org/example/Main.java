@@ -26,6 +26,7 @@ public class Main {
 //                System.out.println(highest);
 //            }
             System.out.println("Position: " + o1.getCenter().getY() + "; Velocity: " + o1.getVelocity().getY() + " Time: " + ((System.currentTimeMillis() - start) / 1000f));
+            Thread.sleep(10);
         }
     }
 

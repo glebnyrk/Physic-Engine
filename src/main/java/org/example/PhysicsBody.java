@@ -128,7 +128,7 @@ public class PhysicsBody extends OrientationReturn {
     }
 
     private void gravityPlugin(float deltaTime) {
-        addVelocity(new Vector3(0, -9.80665f, 0).mul(deltaTime).mul(mass));
+        addVelocity(new Vector3(0, -9.80665f, 0).mul(mass).mul(deltaTime));
     }
     public void motionTick(float delta) {
         boolean collided = safeMove(getVelocity(), Quaternion.ZERO, delta) != null;
