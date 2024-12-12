@@ -1,7 +1,5 @@
 package org.example;
 
-import java.util.zip.ZipError;
-
 public class Vector3 {
     final private float x;
     final private float y;
@@ -54,15 +52,15 @@ public class Vector3 {
         return z;
     }
 
-    float length() {
+    public float length() {
         return length;
     }
 
-    float lengthSquared() {
+    public  float lengthSquared() {
         return squared_length;
     }
 
-    Vector3 normalize() {
+    public Vector3 normalize() {
         if (length > 0) {
             return new Vector3(x / length, y / length, z / length);
         }
@@ -71,30 +69,30 @@ public class Vector3 {
         }
     }
 
-    Vector3 add(Vector3 b) {
+    public Vector3 add(Vector3 b) {
         return new Vector3(x + b.x, y + b.y, z + b.z);
     }
 
-    Vector3 sub(Vector3 b) {
+    public Vector3 sub(Vector3 b) {
         return new Vector3(x - b.x, y - b.y, z - b.z);
     }
 
-    Vector3 mul(float b) {
+    public Vector3 mul(float b) {
         return new Vector3(x * b, y * b, z * b);
     }
 
-    float scalar(Vector3 b) {
+    public float scalar(Vector3 b) {
         return x * b.getX() + y * b.getY() + z * b.getZ();
     }
 
-    Vector3 mul(Vector3 b) {
+    public Vector3 mul(Vector3 b) {
         return new Vector3(y * b.getZ() - z * b.getY(),
                 z * b.getX() - x * b.getZ(),
                 x * b.getY() - y * b.getX());
     }
 
-    float distance(Vector3 b) {
-        return (float) this.sub(b).length();
+    public float distance(Vector3 b) {
+        return this.sub(b).length();
     }
 
     public Vector3 inverse(boolean xi, boolean yi, boolean zi) {

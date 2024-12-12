@@ -2,10 +2,14 @@ package org.example;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
+//        ImpulseMap impulseMap = new ImpulseMapBuilder().setImpulse(new Vector3(1,5,-2)).createImpulseCluster();
+//        ImpulseMap impulseMap2 = new ImpulseMapBuilder().setImpulse(new Vector3(3,1,0)).createImpulseCluster();
+//        impulseMap.add(new Vector3(3,1,0));
+//        System.out.println(impulseMap.getImpulse());
         PhysicsScene scene = new OverWorld();
         Hitbox[] hitBoxes = new Hitbox[]{new BoxHitbox(Vector3.ZERO)};
 
-        PhysicsBody o1 = new PhysicsBodyBuilder().setHitBoxes(hitBoxes).setVelocity(new Vector3(0,10,0)).createPhysicsBody();
+        PhysicsBody o1 = new PhysicsBodyBuilder().setHitBoxes(hitBoxes).setImpulse(new Vector3(0,10,0)).createPhysicsBody();
 
         hitBoxes[0] = new BoxHitbox(o1);
         scene.addObject(o1);
@@ -19,15 +23,14 @@ public class Main {
 
 
         scene.resume();
-        float highest = -Float.MAX_VALUE;
+//        float highest = -Float.MAX_VALUE;
         while (true) {
 //            if (highest < o1.getCenter().getY()){
 //                highest = o1.getCenter().getY();
 //                System.out.println(highest);
 //            }
-            System.out.println("Position: " + o1.getCenter().getY() + "; Velocity: " + o1.getVelocity().getY() + " Time: " + ((System.currentTimeMillis() - start) / 1000f));
+            System.out.println("Position: " + o1.getCenter().getY() + "; Velocity: " + o1.getImpulse()+ " Time: " + ((System.currentTimeMillis() - start) / 1000f));
             Thread.sleep(10);
-        }
     }
-
+    }
 }

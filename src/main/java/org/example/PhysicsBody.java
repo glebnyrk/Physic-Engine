@@ -1,62 +1,67 @@
 package org.example;
 
+import org.example.physics_plugins.FallingPower;
+
 import java.util.Collection;
 
 public class PhysicsBody extends OrientationReturn {
-    private final VelocityCluster velocity = new VelocityCluster(Vector3.ZERO,Vector3.ZERO,Vector3.ZERO,Vector3.ZERO,Vector3.ZERO,Vector3.ZERO,Vector3.ZERO,Vector3.ZERO);
+    private final ImpulseMap impulse = new ImpulseMap(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO);
     private float mass;
 
     public float getMass() {
         return mass;
     }
+
     public void setMass(float mass) {
         this.mass = mass;
     }
+
     private Vector3 position;
     private Quaternion rotation;
     private Vector3 size;
+
     public void setSize(Vector3 size) {
         this.size = size;
     }
+
     private Vector3 delta_size;
     private final Hitbox[] hitBoxes;
     private PhysicsScene myScene;
     private boolean isStatic;
+
     public void setStatic(boolean isStatic) {
         this.isStatic = isStatic;
     }
-    void setVelocity(VelocityCorner corner) {
 
-    }
     PhysicsBody(Vector3 pos,
                 Quaternion rot,
                 Vector3 sizeN,
                 Hitbox[] h,
                 boolean isS,
-                Vector3 velocityFFF,
-                Vector3 velocityFFT,
-                Vector3 velocityFTF,
-                Vector3 velocityFTT,
-                Vector3 velocityTFF,
-                Vector3 velocityTFT,
-                Vector3 velocityTTF,
-                Vector3 velocityTTT,
+                Vector3 impulseFFF,
+                Vector3 impulseFFT,
+                Vector3 impulseFTF,
+                Vector3 impulseFTT,
+                Vector3 impulseTFF,
+                Vector3 impulseTFT,
+                Vector3 impulseTTF,
+                Vector3 impulseTTT,
                 Vector3 sizeD) {
         position = pos;
         rotation = rot;
         size = sizeN;
         mass = 1;
         delta_size = sizeD;
-        hitBoxes = new Hitbox[]{new BoxHitbox(this)};
+        hitBoxes = h;
         isStatic = isS;
-        velocity.setCornerVelocity(VelocityCorner.FFF,velocityFFF);
-        velocity.setCornerVelocity(VelocityCorner.FFT,velocityFFT);
-        velocity.setCornerVelocity(VelocityCorner.FTF,velocityFTF);
-        velocity.setCornerVelocity(VelocityCorner.FTT,velocityFTT);
-        velocity.setCornerVelocity(VelocityCorner.TFF,velocityTFF);
-        velocity.setCornerVelocity(VelocityCorner.TFT,velocityTFT);
-        velocity.setCornerVelocity(VelocityCorner.TTF,velocityTTF);
-        velocity.setCornerVelocity(VelocityCorner.TTT,velocityTTT);
+        impulse.setCornerImpulse(ImpulseCorner.FFF, impulseFFF);
+        impulse.setCornerImpulse(ImpulseCorner.FFT, impulseFFT);
+        impulse.setCornerImpulse(ImpulseCorner.FTF, impulseFTF);
+        impulse.setCornerImpulse(ImpulseCorner.FTT, impulseFTT);
+        impulse.setCornerImpulse(ImpulseCorner.TFF, impulseTFF);
+        impulse.setCornerImpulse(ImpulseCorner.TFT, impulseTFT);
+        impulse.setCornerImpulse(ImpulseCorner.TTF, impulseTTF);
+        impulse.setCornerImpulse(ImpulseCorner.TTT, impulseTTT);
     }
 
     public PhysicsScene getScene() {
@@ -124,32 +129,32 @@ public class PhysicsBody extends OrientationReturn {
         }
         motionTick(deltaTime);
 
-        gravityPlugin(deltaTime);
+        new FallingPower().process(this, deltaTime);
     }
 
-    private void gravityPlugin(float deltaTime) {
-        addVelocity(new Vector3(0, -9.80665f, 0).mul(mass).mul(deltaTime));
-    }
     public void motionTick(float delta) {
-        boolean collided = safeMove(getVelocity(), Quaternion.ZERO, delta) != null;
+        boolean collided = safeMove(getImpulse().mul(1f / getMass()), Quaternion.ZERO, delta) != null;
         if (collided) {
-
+            multiplyImpulse(-1);
         }
     }
 
-    public void addVelocity(Vector3 v) {
-        v = v.mul(1f / mass);
-        velocity.add(velocity);
+    public void addImpulse(Vector3 v) {
+        impulse.add(v);
     }
-    public void multiplyVelocity(float b){
-        velocity.mul(b);
+
+    public void multiplyImpulse(float b) {
+        impulse.mul(b);
     }
-    public Vector3 getVelocity() {
-        return velocity.getVelocity();
+
+    public Vector3 getImpulse() {
+        return impulse.getImpulse();
     }
-    public Vector3 getVelocityCorner(VelocityCorner corner) {
-        return velocity.getCornerVelocity(corner);
+
+    public Vector3 getImpulse(ImpulseCorner corner) {
+        return impulse.getCornerImpulse(corner);
     }
+
     public void move(Vector3 velocity, Quaternion rot, float deltaTime) {
         velocity = velocity.mul(deltaTime);
         Quaternion newRotation = new Quaternion(rot.getR() * deltaTime, rot.getI(), rot.getJ(), rot.getK());

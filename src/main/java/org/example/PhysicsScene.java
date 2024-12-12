@@ -10,6 +10,8 @@ public abstract class PhysicsScene implements Runnable {
     private long last_call = System.nanoTime();
     private boolean running = false;
 
+    public abstract Vector3 getGravityConstant();
+
     public final void run() {
         long time = System.nanoTime();
         long delta = time - last_call;
@@ -23,8 +25,6 @@ public abstract class PhysicsScene implements Runnable {
     public synchronized boolean isWorking() {
         return running;
     }
-
-    ;
 
     public synchronized void pause() {
         running = false;
