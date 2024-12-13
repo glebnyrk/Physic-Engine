@@ -1,5 +1,8 @@
 package org.example;
 
+/**
+ * Кватернион
+ */
 public class Quaternion {
     final private float r;
     final private float i;
@@ -9,6 +12,14 @@ public class Quaternion {
     final private float length;
     final private static float rad = (float) Math.PI / 180;
     final public static Quaternion ZERO = new Quaternion(1,0,0,0);
+
+    /**
+     * Создание кватерниона из мнимых и вещественной составляющих
+     * @param r - вещественная составляющая
+     * @param i - первая мнимая
+     * @param j - вторая мнимая
+     * @param k - третья мнимая
+     */
     public Quaternion(float r, float i, float j, float k) {
         this.r = r;
         this.i = i;
@@ -50,6 +61,10 @@ public class Quaternion {
         length = (float) Math.sqrt(squaredLength);
     }
 
+    /**
+     * Создание кватерниона вращения из вектора.
+     * @param vector
+     */
     public Quaternion(Vector3 vector) {
         r = 0;
         i = vector.getX();
@@ -58,19 +73,32 @@ public class Quaternion {
         squaredLength = r * r + i * i + j * j + k * k;
         length = (float) Math.sqrt(squaredLength);
     }
-
-    public float getI() {
-        return i;
-    }
-
+    /**
+     * Получение второй мнимой части
+     * @return
+     */
     public float getJ() {
         return j;
     }
 
+    /**
+     * Получение первой мнимой части
+     * @return
+     */
+    public float getI() {
+        return i;
+    }
+
+    /**
+     * Получение
+     */
     public float getR() {
         return r;
     }
-
+    /**
+     * Получение третьей мнимой части
+     * @return
+     */
     public float getK() {
         return k;
     }
