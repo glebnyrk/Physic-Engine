@@ -2,35 +2,35 @@ package org.example;
 
 public enum ImpulseCorner {
     /**
-     * back down left impulse corner
+     * Задний нижний левый угол импульса
      */
     FFF,
     /**
-     * back down right impulse corner
+     * Задний нижний правый угол импульса
      */
     FFT,
     /**
-     *  back up left impulse corner
+     *  Задний верхний левый угол импульса
      */
     FTF,
     /**
-     * back up right impulse corner
+     * Задний верхний правый угол импульса
      */
     FTT,
     /**
-     * front down left impulse corner
+     * Передний нижний левый угол импульса
      */
     TFF,
     /**
-     * front down right impulse corner
+     * Передний нижний правый угол импульса
      */
     TFT,
     /**
-     * front up left impulse corner
+     * Передний верхний левый угол импульса
      */
     TTF,
     /**
-     * front up right impulse corner
+     * Передний верхний правый угол импульса
      */
     TTT
 }

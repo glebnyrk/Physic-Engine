@@ -8,6 +8,12 @@ public class BoxHitbox extends Hitbox {
     private Quaternion rotation;
     private float rawRadius;
 
+    /**
+     * Создание статического хитбокса
+     * @param position - центр
+     * @param size - полуразмер
+     * @param rotation - квантерион вращения
+     */
     BoxHitbox(Vector3 position, Vector3 size, Quaternion rotation) {
         this.position = position;
         this.size = size;
@@ -15,7 +21,11 @@ public class BoxHitbox extends Hitbox {
         this.isStatic = true;
         orientation = null;
     }
-
+    /**
+     * Создание статического хитбокса
+     * @param position - центр
+     * @param size - полуразмер
+     */
     BoxHitbox(Vector3 position, Vector3 size) {
         this.position = position;
         this.size = size;
@@ -23,7 +33,10 @@ public class BoxHitbox extends Hitbox {
         this.isStatic = true;
         orientation = null;
     }
-
+    /**
+     * Создание статического хитбокса
+     * @param position - центр
+     */
     BoxHitbox(Vector3 position) {
         this.position = position;
         this.size = new Vector3(1, 1, 1);
@@ -32,11 +45,17 @@ public class BoxHitbox extends Hitbox {
         orientation = null;
     }
 
+    /**
+     * Создание динамичного хитбокса привязанного к значениям orientation
+     */
     BoxHitbox(OrientationReturn orientation) {
         this.isStatic = false;
         this.orientation = orientation;
     }
 
+    /**
+     * Оптимально проверят коллизии с other
+     */
     @Override
     public boolean collidesWith(Hitbox other) {
         if (!rawCollideCheck(other)) {
@@ -54,6 +73,11 @@ public class BoxHitbox extends Hitbox {
 
     }
 
+    /**
+     * Полностью проверяет коллизии с other
+     * @param other
+     * @return
+     */
     public boolean clearBoxCollideCheck(BoxHitbox other) {
         Vector3 xAxis = new Vector3(1, 0, 0);
         Vector3 yAxis = new Vector3(0, 1, 0);
@@ -96,6 +120,10 @@ public class BoxHitbox extends Hitbox {
         return true;
     }
 
+    /**
+     * проекция углов на ось axis
+     * @return
+     */
     public float[] projection(Vector3 axis) {
         return new float[]{
                 getGlobalCorner(false, false, false).scalar(axis),
@@ -125,14 +153,41 @@ public class BoxHitbox extends Hitbox {
         return min;
     }
 
+    /**
+     * Получение локального угла
+     */
     public Vector3 getCorner(boolean x, boolean y, boolean z) {
         return getSize().inverse(x, y, z);
     }
-
+    /**
+     * Получение локального угла
+     * @return
+     */
+    public Vector3 getCorner(ImpulseCorner corner) {
+        boolean x,y,z;
+        x = corner.ordinal() % 2 == 1;
+        y = (corner.ordinal()/2) % 2 == 1;
+        z = (corner.ordinal()/4) % 2 == 1;
+        return getCorner(x, y, z);
+    }
+    /**
+     * Получение глобального угла
+     */
+    public Vector3 getGlobalCorner(ImpulseCorner corner) {
+        return translateToGlobal(getCorner(corner));
+    }
+    /**
+     * Получение глобального угла
+     */
     public Vector3 getGlobalCorner(boolean x, boolean y, boolean z) {
-        return translateToGlobal(getCorner(x, y, z));
+        return translateToGlobal(getCorner(x,y,z));
     }
 
+    /**
+     * Средняя проверка коллизий. Может вернуть false когда хитбоксы пересекаются
+     * @param box
+     * @return
+     */
     public boolean mediumBoxCollideCheck(BoxHitbox box) {
         return checkOtherLocalPointInMe(box, box.getCorner(false, false, false)) ||
                 checkOtherLocalPointInMe(box, box.getCorner(false, false, true)) ||
@@ -165,7 +220,7 @@ public class BoxHitbox extends Hitbox {
 
     @Override
     public boolean contains(Vector3 point) {
-        return false;
+        return isMyLocalPointInside(translateToLocal(point));
     }
 
     @Override

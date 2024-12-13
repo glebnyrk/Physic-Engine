@@ -10,6 +10,9 @@ public abstract class PhysicsScene implements Runnable {
     private long last_call = System.nanoTime();
     private boolean running = false;
 
+    /**
+     * Направление и сила гравитации (ха-ха, ну сделай измерение в котором всё будет падать вверх, это же смешно)
+     */
     public abstract Vector3 getGravityConstant();
 
     public final void run() {
@@ -22,20 +25,38 @@ public abstract class PhysicsScene implements Runnable {
         }
     }
 
+    /**
+     * Проверяет, работает ли симуляция на сцене
+     * @return
+     */
     public synchronized boolean isWorking() {
         return running;
     }
 
+    /**
+     * Ставит симуляцию на паузу
+     */
     public synchronized void pause() {
         running = false;
     }
 
+    /**
+     * Снимает симуляцию с паузы
+     */
     public synchronized void resume() {
         running = true;
     }
 
+    /**
+     * Метод для обработки физики
+     * @param delta
+     */
     public abstract void physicsTick(float delta);
 
+    /**
+     * Метод для всякой без полезной фигни
+     * @param delta
+     */
     public abstract void update(float delta);
 
     public synchronized final void addObject(PhysicsBody object) {
@@ -46,14 +67,24 @@ public abstract class PhysicsScene implements Runnable {
         objects.add(object);
     }
 
+    /**
+     * Удаляет объект со сцены
+     * @param object
+     */
     public synchronized final void removeObject(PhysicsBody object) {
         objects.remove(object);
     }
 
+    /**
+     * Возвращает список объектов на сцене
+     */
     public synchronized final ArrayList<PhysicsBody> getObjects() {
         return objects;
     }
 
+    /**
+     * Возвращает список объектов которые могли бы пересекаться с object
+     */
     public synchronized ArrayList<PhysicsBody> getRaws(PhysicsBody object) {
         ArrayList<PhysicsBody> _r = new ArrayList<>();
         for (PhysicsBody other : objects) {

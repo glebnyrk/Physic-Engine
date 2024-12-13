@@ -1,5 +1,8 @@
 package org.example;
 
+/**
+ * Карта импульсов для удобной структуризации импульсов
+ */
 public final class ImpulseMap {
     private final Vector3[] impulses = new Vector3[8];
     ImpulseMap(Vector3 fffCorner,
@@ -38,17 +41,29 @@ public final class ImpulseMap {
                 .add(getCornerImpulse(ImpulseCorner.TTF))
                 .add(getCornerImpulse(ImpulseCorner.TTT));
     }
-    public void add(ImpulseMap cluster){
+
+    /**
+     * Добавление карты импульсов к существующей
+     */
+    public void add(ImpulseMap map){
         for(int i = 0; i < 8; i++){
-            impulses[i] = impulses[i].add(cluster.impulses[i]);
+            impulses[i] = impulses[i].add(map.impulses[i]);
         }
     }
+
+    /**
+     * Распределение импульса по всей карте и сложение
+     */
     public void add(Vector3 vector){
         vector = vector.mul(1f/8f);
         for(int i = 0; i < 8; i++){
             impulses[i] = impulses[i].add(vector);
         }
     }
+
+    /**
+     * Умножение всех импульсов на b
+     */
     public void mul(float b){
         for(int i = 0; i < 8; i++){
             impulses[i] = impulses[i].mul(b);
