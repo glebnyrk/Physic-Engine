@@ -10,7 +10,7 @@ public class OverWorld extends PhysicsScene {
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
         scheduler.scheduleAtFixedRate(this,0, TARGET_DELAY, TimeUnit.MILLISECONDS);
     }
-    private static final Vector3 GRAVITYCONSTANT = new Vector3(0,-17.76859f,0); //gravitational acceleration of minecraft world
+    private static final Vector3 GRAVITYCONSTANT = new Vector3(0,-32,0); //gravitational acceleration of minecraft world
     @Override
     public Vector3 getGravityConstant() {
         return GRAVITYCONSTANT;

@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.physics_plugins.FallingPower;
+import org.example.physics_plugins.WindagePlugin;
 
 import java.util.Collection;
 
@@ -197,8 +198,8 @@ public class PhysicsBody extends OrientationReturn {
             return;
         }
         motionTick(deltaTime);
-
         new FallingPower().process(this, deltaTime);
+        new WindagePlugin().process(this, deltaTime);
     }
 
     /**
