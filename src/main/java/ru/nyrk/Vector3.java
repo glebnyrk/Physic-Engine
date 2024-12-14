@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 public class Vector3 {
     final private float x;
@@ -8,6 +8,7 @@ public class Vector3 {
     final private float squared_length;
     public static final Vector3 ZERO = new Vector3(0.0f, 0.0f, 0.0f);
     public static final Vector3 ONE = new Vector3(1f, 1f, 1f);
+
     public static final Vector3 X = new Vector3(1f, 0.0f, 0.0f);
     public static final Vector3 MINUSX = new Vector3(-1f, 0.0f, 0.0f);
     public static final Vector3 Y = new Vector3(0f, 1f, 0.0f);
@@ -105,5 +106,8 @@ public class Vector3 {
 
     public String toString() {
         return "V3(" + x + ", " + y + ", " + z + ")";
+    }
+    public boolean equals(Vector3 b) {
+        return x == b.getX() && y == b.getY() && z == b.getZ();
     }
 }

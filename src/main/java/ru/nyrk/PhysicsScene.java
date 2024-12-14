@@ -1,7 +1,6 @@
-package org.example;
+package ru.nyrk;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public abstract class PhysicsScene implements Runnable {
     public static final long TARGET_DELAY = 50;

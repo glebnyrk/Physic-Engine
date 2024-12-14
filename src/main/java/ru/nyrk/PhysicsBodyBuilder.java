@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 public class PhysicsBodyBuilder {
     private Vector3 pos = Vector3.ZERO;

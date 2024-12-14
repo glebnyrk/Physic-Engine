@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 /**
  * Позволяет очень удобно зафиксировать ориентацию локально другой
@@ -15,6 +15,7 @@ public class LocalLock extends OrientationReturn{
         orientation = original;
         localOrientation = local;
     }
+
     @Override
     public Vector3 getCenter() {
         return orientation.translateToGlobal(orientation.getCenter());

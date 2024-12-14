@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 public class ImpulseMapBuilder {
     private Vector3 fffCorner = Vector3.ZERO;

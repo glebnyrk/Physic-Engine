@@ -1,7 +1,9 @@
-package org.example;
+package ru.nyrk;
 
-import org.example.physics_plugins.FallingPower;
-import org.example.physics_plugins.WindagePlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.nyrk.physics_plugins.FallingPower;
+import ru.nyrk.physics_plugins.WindagePlugin;
 
 import java.util.Collection;
 
@@ -35,7 +37,7 @@ public class PhysicsBody extends OrientationReturn {
      * Установить статичный размер (может измениться)
      * @param size - новый полуразмер
      */
-    public void setSize(Vector3 size) {
+    public void setSize(@NotNull Vector3 size) {
         this.size = size;
     }
 
@@ -59,14 +61,6 @@ public class PhysicsBody extends OrientationReturn {
      * @param sizeN - размер
      * @param h - массив хитбоксов. Должны быть привязаны к объекту
      * @param isS - создать объект изначально статичным
-     * @param impulseFFF
-     * @param impulseFFT
-     * @param impulseFTF
-     * @param impulseFTT
-     * @param impulseTFF
-     * @param impulseTFT
-     * @param impulseTTF
-     * @param impulseTTT
      * @param sizeD - динамический размер
      */
     PhysicsBody(Vector3 pos,
@@ -103,42 +97,42 @@ public class PhysicsBody extends OrientationReturn {
     /**
      * @return сцена на которой объект находится
      */
-    public PhysicsScene getScene() {
+    public @Nullable PhysicsScene getScene() {
         return myScene;
     }
 
     /**
      * @param newScene новая сцена объекта
      */
-    public void setScene(PhysicsScene newScene) {
+    public void setScene(@Nullable PhysicsScene newScene) {
         myScene = newScene;
     }
 
     /**
      * @return массив хитбоксов объекта
      */
-    public Hitbox[] getHitBoxes() {
+    public @Nullable Hitbox[] getHitBoxes() {
         return hitBoxes;
     }
 
     /**
      * @return центр вращения, изменения размера. Позиция.
      */
-    public Vector3 getCenter() {
+    public @NotNull Vector3 getCenter() {
         return position;
     }
 
     /**
      * @return кватернион вращения
      */
-    public Quaternion getRotation() {
+    public @NotNull Quaternion getRotation() {
         return rotation;
     }
 
     /**
      * @return получение глобального размера (может измениться)
      */
-    public Vector3 getSize() {
+    public @NotNull Vector3 getSize() {
         return new Vector3(size.getX() * delta_size.getX(),
                 size.getY() * delta_size.getY(),
                 size.getZ() * delta_size.getZ());
@@ -146,13 +140,13 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Проверяет, сталкиваются ли два объекта
-     * @param other объект
+     * @param otherBody объект
      */
-    public final boolean collidesWith(PhysicsBody other) {
-        for (Hitbox owns : hitBoxes) {
-            Hitbox[] hitBoxes1 = other.getHitBoxes();
-            for (Hitbox others : hitBoxes1) {
-                boolean collide = owns.collidesWith(others);
+    public final boolean collidesWith(@NotNull PhysicsBody otherBody) {
+        Hitbox[] hitBoxes1 = otherBody.getHitBoxes();
+        for (Hitbox own : hitBoxes) {
+            for (Hitbox other : hitBoxes1) {
+                boolean collide = own.collidesWith(other);
                 if (collide) {
                     return true;
                 }
@@ -164,9 +158,9 @@ public class PhysicsBody extends OrientationReturn {
     /**
      * Проверяет сразу всю коллекцию на столкновения
      * @param other - коллекция
-     * @return - объект с которым произошло столкновение (предполагается что такой может быть только один)
+     * @return - объект с которым произошло столкновение (возвращает null если коллизий не произошло)
      */
-    public final PhysicsBody collidesWith(Collection<PhysicsBody> other) {
+    public @Nullable final PhysicsBody collidesWith(@NotNull Collection<PhysicsBody> other) {
         for (PhysicsBody physicsBody : other) {
             if (collidesWith(physicsBody)) {
                 return physicsBody;
@@ -203,14 +197,14 @@ public class PhysicsBody extends OrientationReturn {
     }
 
     /**
-     * Обрабатывает импульсы и отражает их в случае коллизий
+     * Обрабатывает импульсы и отражает их в случае столкновений
      * @param deltaTime - задержка с прошлого вызова в секундах
      */
     public void motionTick(float deltaTime) {
         boolean collided = safeMove(getImpulse().mul(1f / getMass()), Quaternion.ZERO, deltaTime) != null;
-        if (collided) {
-            multiplyImpulse(-1);
-        }
+//        if (collided) {
+//            multiplyImpulse(-1);
+//        }
     }
 
     /**
@@ -233,7 +227,7 @@ public class PhysicsBody extends OrientationReturn {
      * Получение общего (сумма всех импульсов на углах) импульса
      * @return вектор импульса
      */
-    public Vector3 getImpulse() {
+    public @NotNull Vector3 getImpulse() {
         return impulse.getImpulse();
     }
 
@@ -241,7 +235,7 @@ public class PhysicsBody extends OrientationReturn {
      * Получение импульса конкретного угла
      * @param corner угол импульс которого нужно получить
      */
-    public Vector3 getImpulse(ImpulseCorner corner) {
+    public @NotNull Vector3 getImpulse(ImpulseCorner corner) {
         return impulse.getCornerImpulse(corner);
     }
 
@@ -262,18 +256,22 @@ public class PhysicsBody extends OrientationReturn {
      * @param velocity - скорость с которой надо сдвинуть
      * @param rot - кватернион вращения на который нужно повернуть
      * @param deltaTime - задержка с прошлого вызова / время для вычисления дальности сдвига и поворота
+     * @return объект с которым произошло столкновение во время движения (если столкновения не произошло, возвращает null)
      */
-    public PhysicsBody safeMove(Vector3 velocity, Quaternion rot, float deltaTime) {
-        PhysicsBody _r;
+    public @Nullable PhysicsBody safeMove(Vector3 velocity, Quaternion rot, float deltaTime) {
+        PhysicsBody _r = null;
         for (int i = 0; i < PhysicsScene.MOVE_QUALITY; i++) {
             velocity = velocity.mul(0.5f);
             move(velocity, rot, deltaTime);
-            _r = collidesWith(myScene.getRaws(this));
-            boolean collides = _r != null;
+            PhysicsBody collidesWith = collidesWith(myScene.getRaws(this));
+            if (collidesWith != null){
+                _r = collidesWith;
+            }
+            boolean collides = collidesWith != null;
             if (collides) {
                 move(velocity, rot, -deltaTime);
             }
         }
-        return null;
+        return _r;
     }
 }

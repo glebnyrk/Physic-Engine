@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 public abstract class Hitbox extends OrientationReturn{
     /**
@@ -16,7 +16,7 @@ public abstract class Hitbox extends OrientationReturn{
     }
 
     /**
-     * Проверяет, не лижет ли точка внутри хитбокса
+     * Проверяет, лежит ли точка внутри хитбокса
      * @param point
      * @return
      */

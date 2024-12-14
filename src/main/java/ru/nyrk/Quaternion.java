@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 /**
  * Кватернион
@@ -172,6 +172,9 @@ public class Quaternion {
 
     public String toString() {
         return "Q(" + r + ", " + i + ", " + j + ", " + k + ")";
+    }
+    public boolean equals(Quaternion q) {
+        return q.r == r && q.i == i && q.j == j && q.k == k;
     }
 
 }

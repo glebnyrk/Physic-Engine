@@ -1,4 +1,4 @@
-package org.example;
+package ru.nyrk;
 
 public enum ImpulseCorner {
     /**
