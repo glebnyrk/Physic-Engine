@@ -36,29 +36,24 @@ public class Quaternion {
      * @param vector rotation axis
      */
     public Quaternion(float angle, Vector3 vector) {
-        vector = vector.normalize();
+        // Переводим угол в радианы
         angle = angle * rad;
-        float nr = (float) Math.cos(angle / 2);
-        float ni = (float) (vector.getX() * Math.sin(angle / 2));
-        float nj = (float) (vector.getY() * Math.sin(angle / 2));
-        float nk = (float) (vector.getZ() * Math.sin(angle / 2));
-        float nSquaredLength = nr * nr + ni * ni + nj * nj + nk * nk;
-        float nLength = (float) Math.sqrt(nSquaredLength);
-        if (nLength == 0){
-            r=0;
-            i=1;
-            j=0;
-            k=0;
-            length = 1;
-            squaredLength = 1;
-            return;
-        }
-        r = nr / nLength;
-        i = ni / nLength;
-        j = nj / nLength;
-        k = nk / nLength;
-        squaredLength = r * r + i * i + j * j + k * k;
-        length = (float) Math.sqrt(squaredLength);
+
+        // Нормализуем вектор
+        vector = vector.normalize();
+
+        // Вычисляем компоненты кватерниона
+        float halfSin = (float) Math.sin(angle / 2);
+        float halfCos = (float) Math.cos(angle / 2);
+
+        r = halfCos;
+        i = vector.getX() * halfSin;
+        j = vector.getY() * halfSin;
+        k = vector.getZ() * halfSin;
+
+        // Устанавливаем длину (нормализованному кватерниону длина равна 1)
+        squaredLength = 1.0f;
+        length = 1.0f;
     }
 
     /**
@@ -147,11 +142,11 @@ public class Quaternion {
         if (length == 0){
             return Quaternion.ZERO.back();
         }
-        return new Quaternion(1 / (length() * length()), 0, 0, 0).mul(conjugate());
+        return conjugate().mul(new Quaternion(1/squaredLength,0,0,0));
     }
 
     Quaternion rotate(Quaternion b) {
-        return this.normalize().mul(b.normalize());
+        return b.mul(this).mul(b.conjugate());
     }
 
     Quaternion rotateX(float angle) {

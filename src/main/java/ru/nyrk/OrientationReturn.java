@@ -11,34 +11,35 @@ public abstract class OrientationReturn {
 
     /**
      * Получение поворота
+     *
      * @return
      */
     abstract Vector3 getSize();
 
     /**
      * Получение поворота вращения
+     *
      * @return
      */
     abstract Quaternion getRotation();
 
     /**
      * Перевести глобальную точку в локальную
-     * TOFIX
      */
-    public final Vector3 translateToLocal(Vector3 point){
-        point = getCenter().sub(point);
-//        point = new Vector3(new Quaternion(point).rotate(getRotation().conjugate()));
-//        point = new Vector3(point.getX() / getSize().getX(), point.getY() / getSize().getY(), point.getZ() / getSize().getZ());
-        return point;
+    public final Vector3 translateToLocal(Vector3 point) {
+        Vector3 position = point.sub(getCenter());
+        Vector3 rotated = new Vector3(new Quaternion(position).rotate(getRotation().conjugate()));
+        Vector3 sized = new Vector3(rotated.getX() / getSize().getX(), rotated.getY() / getSize().getY(), rotated.getZ() / getSize().getZ());
+        return sized;
     }
 
     /**
      * Перевести локальную точку в глобальную
      */
-    public final Vector3 translateToGlobal(Vector3 p){
-        Quaternion q = getRotation();
-        Vector3 t = getCenter();
-        Vector3 size = getSize();
-        return new Vector3(q.mul(new Quaternion(new Vector3(p.getX() * size.getX(), p.getY() * size.getY(), p.getZ() * size.getZ())))).add(t);
+    public final Vector3 translateToGlobal(Vector3 p) {
+        Vector3 sized = new Vector3(p.getX() * getSize().getX(), p.getY() * getSize().getY(), p.getZ() * getSize().getZ());
+        Vector3 rotated = new Vector3(new Quaternion(sized).rotate(getRotation()));
+        Vector3 centred = rotated.add(getCenter());
+        return centred;
     }
 }

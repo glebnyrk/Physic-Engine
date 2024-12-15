@@ -10,11 +10,11 @@ public class Vector3 {
     public static final Vector3 ONE = new Vector3(1f, 1f, 1f);
 
     public static final Vector3 X = new Vector3(1f, 0.0f, 0.0f);
-    public static final Vector3 MINUSX = new Vector3(-1f, 0.0f, 0.0f);
+    public static final Vector3 NEGATIVE_X = new Vector3(-1f, 0.0f, 0.0f);
     public static final Vector3 Y = new Vector3(0f, 1f, 0.0f);
-    public static final Vector3 MINUSY = new Vector3(0f, -1f, 0.0f);
+    public static final Vector3 NEGATIVE_Y = new Vector3(0f, -1f, 0.0f);
     public static final Vector3 Z = new Vector3(0f, 0f, 1f);
-    public static final Vector3 MINUSZ = new Vector3(0f, 0f, -1f);
+    public static final Vector3 NEGATIVE_Z = new Vector3(0f, 0f, -1f);
 
     public Vector3(float x, float y, float z) {
         this.x = x;
@@ -26,19 +26,11 @@ public class Vector3 {
     }
 
     public Vector3(Quaternion quaternion) {
-        if (quaternion.getI() == 0 && quaternion.getJ() == 0 && quaternion.getK() == 0) {
-            x = 1f;
-            y = 0f;
-            z = 0f;
-            length = 1;
-            squared_length = 1f;
-        } else {
-            x = quaternion.getI();
-            y = quaternion.getJ();
-            z = quaternion.getK();
-            squared_length = x * x + y * y + z * z;
-            length = (float) Math.sqrt(squared_length);
-        }
+        x = quaternion.getI();
+        y = quaternion.getJ();
+        z = quaternion.getK();
+        squared_length = x * x + y * y + z * z;
+        length = (float) Math.sqrt(squared_length);
     }
 
     public float getX() {
@@ -66,7 +58,7 @@ public class Vector3 {
             return new Vector3(x / length, y / length, z / length);
         }
         else {
-            return new Vector3(1f, 0,0);
+            return this;
         }
     }
 
@@ -109,5 +101,10 @@ public class Vector3 {
     }
     public boolean equals(Vector3 b) {
         return x == b.getX() && y == b.getY() && z == b.getZ();
+    }
+    public boolean equals(Vector3 b, float delta) {
+        return (x < b.getX()+delta && x > b.getX()-delta) &&
+                (y < b.getY()+delta && y > b.getY()-delta) &&
+                (z < b.getZ()+delta && z > b.getZ()-delta);
     }
 }

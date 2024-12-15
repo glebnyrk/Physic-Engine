@@ -6,7 +6,6 @@ public class BoxHitbox extends Hitbox {
     private Vector3 position;
     private Vector3 size;
     private Quaternion rotation;
-    private float rawRadius;
 
     /**
      * Создание статического хитбокса
@@ -64,15 +63,6 @@ public class BoxHitbox extends Hitbox {
     @Override
     public boolean collidesWith(Hitbox other) {
         return clearBoxCollideCheck((BoxHitbox) other);
-//        if (!rawCollideCheck(other)) {
-//            return false;
-//        } else {
-//            if (other instanceof BoxHitbox box) {
-//            }
-//            else {
-//                return false;
-//            }
-//        }
     }
 
     /**
@@ -82,15 +72,15 @@ public class BoxHitbox extends Hitbox {
      * @return
      */
     public boolean clearBoxCollideCheck(BoxHitbox other) {
-        Quaternion xAxis = new Quaternion(90,new Vector3(1,0,0));
-        Quaternion yAxis = new Quaternion(90,new Vector3(0,1,0));
-        Quaternion zAxis = new Quaternion(90,new Vector3(0,0,1));
-        Vector3 y = new Vector3(getRotation().rotate(yAxis));
-        Vector3 x = new Vector3(getRotation().rotate(xAxis));
-        Vector3 z = new Vector3(getRotation().rotate(zAxis));
-        Vector3 x1 = new Vector3(other.getRotation().rotate(xAxis));
-        Vector3 y1 = new Vector3(other.getRotation().rotate(yAxis));
-        Vector3 z1 = new Vector3(other.getRotation().rotate(zAxis));
+        Quaternion xAxis = new Quaternion(new Vector3(1,0,0));
+        Quaternion yAxis = new Quaternion(new Vector3(0,1,0));
+        Quaternion zAxis = new Quaternion(new Vector3(0,0,1));
+        Vector3 y = new Vector3(yAxis.rotate(getRotation()));
+        Vector3 x = new Vector3(xAxis.rotate(getRotation()));
+        Vector3 z = new Vector3(zAxis.rotate(getRotation()));
+        Vector3 x1 = new Vector3(xAxis.rotate(other.getRotation()));
+        Vector3 y1 = new Vector3(yAxis.rotate(other.getRotation()));
+        Vector3 z1 = new Vector3(zAxis.rotate(other.getRotation()));
 
         Vector3[] axes = new Vector3[]{
                 x,
@@ -128,7 +118,7 @@ public class BoxHitbox extends Hitbox {
     }
 
     private float overlap(float min1, float max1, float min2, float max2) {
-        return Math.min(max1, max2) - Math.max(min1, min2);
+        return Math.min(max1 - min2, max2 - min1);
     }
 
     /**
@@ -150,7 +140,7 @@ public class BoxHitbox extends Hitbox {
     }
 
     private float max(float... nums) {
-        float max = Float.MIN_VALUE;
+        float max = Float.NEGATIVE_INFINITY;
         for (float num : nums) {
             max = Math.max(max, num);
         }
@@ -158,7 +148,7 @@ public class BoxHitbox extends Hitbox {
     }
 
     private float min(float... nums) {
-        float min = Float.MAX_VALUE;
+        float min = Float.POSITIVE_INFINITY;
         for (float num : nums) {
             min = Math.min(min, num);
         }
@@ -169,7 +159,7 @@ public class BoxHitbox extends Hitbox {
      * Получение локального угла
      */
     public Vector3 getCorner(boolean x, boolean y, boolean z) {
-        return getSize().inverse(x, y, z);
+        return new Vector3(x ? 1 : -1, y ? 1 : -1, z ? 1 : -1);
     }
 
     /**
@@ -244,9 +234,9 @@ public class BoxHitbox extends Hitbox {
     @Override
     public Quaternion getRotation() {
         if (isStatic) {
-            return rotation;
+            return rotation.normalize();
         } else {
-            return orientation.getRotation();
+            return orientation.getRotation().normalize();
         }
     }
 
