@@ -26,6 +26,7 @@ public abstract class PhysicsScene implements Runnable {
 
     /**
      * Проверяет, работает ли симуляция на сцене
+     *
      * @return
      */
     public synchronized boolean isWorking() {
@@ -48,12 +49,14 @@ public abstract class PhysicsScene implements Runnable {
 
     /**
      * Метод для обработки физики
+     *
      * @param delta
      */
     public abstract void physicsTick(float delta);
 
     /**
      * Метод для всякой без полезной фигни
+     *
      * @param delta
      */
     public abstract void update(float delta);
@@ -68,6 +71,7 @@ public abstract class PhysicsScene implements Runnable {
 
     /**
      * Удаляет объект со сцены
+     *
      * @param object
      */
     public synchronized final void removeObject(PhysicsBody object) {
@@ -85,16 +89,6 @@ public abstract class PhysicsScene implements Runnable {
      * Возвращает список объектов которые могли бы пересекаться с object
      */
     public synchronized ArrayList<PhysicsBody> getRaws(PhysicsBody object) {
-        ArrayList<PhysicsBody> _r = new ArrayList<>();
-        for (PhysicsBody other : objects) {
-            if (other != object) {
-                float objectRawRadius = object.rawRadius();
-                float otherRawRadius = other.rawRadius();
-                if (objectRawRadius + otherRawRadius > object.getCenter().distance(other.getCenter())) {
-                    _r.add(other);
-                }
-            }
-        }
-        return _r;
+
     }
 }

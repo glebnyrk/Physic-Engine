@@ -14,14 +14,15 @@ public class PhysicsBodyBuilder {
     private Vector3 impulseTFT = Vector3.ZERO;
     private Vector3 impulseTTF = Vector3.ZERO;
     private Vector3 impulseTTT = Vector3.ZERO;
-    private Vector3 sizeD  = Vector3.ONE;
+    private Vector3 sizeD = Vector3.ONE;
 
     public PhysicsBodyBuilder setPos(Vector3 posN) {
         this.pos = posN;
         return this;
     }
+
     public PhysicsBodyBuilder setImpulse(Vector3 v) {
-        v = v.mul(1f/8f);
+        v = v.mul(1f / 8f);
         this.impulseFFF = v;
         this.impulseFFT = v;
         this.impulseFTF = v;
@@ -32,6 +33,7 @@ public class PhysicsBodyBuilder {
         this.impulseTTT = v;
         return this;
     }
+
     public PhysicsBodyBuilder setRot(Quaternion rotN) {
         this.rot = rotN;
         return this;

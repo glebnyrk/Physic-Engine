@@ -49,8 +49,9 @@ public class ImpulseMapBuilder {
         this.tttCorner = tttCorner;
         return this;
     }
+
     public ImpulseMapBuilder setImpulse(Vector3 impulse) {
-        impulse = impulse.mul(1f/8f);
+        impulse = impulse.mul(1f / 8f);
         this.fffCorner = impulse;
         this.fftCorner = impulse;
         this.ftfCorner = impulse;
@@ -61,6 +62,7 @@ public class ImpulseMapBuilder {
         this.tttCorner = impulse;
         return this;
     }
+
     public ImpulseMap createImpulseCluster() {
         return new ImpulseMap(fffCorner, fftCorner, ftfCorner, fttCorner, tffCorner, tftCorner, ttfCorner, tttCorner);
     }

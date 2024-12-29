@@ -1,20 +1,23 @@
 package ru.nyrk;
 
+import java.util.Objects;
+
 /**
  * Кватернион
  */
 public class Quaternion {
+    final public static Quaternion ZERO = new Quaternion(1, 0, 0, 0);
+    final private static float rad = (float) Math.PI / 180;
     final private float r;
     final private float i;
     final private float j;
     final private float k;
     final private float squaredLength;
     final private float length;
-    final private static float rad = (float) Math.PI / 180;
-    final public static Quaternion ZERO = new Quaternion(1,0,0,0);
 
     /**
      * Создание кватерниона из мнимых и вещественной составляющих
+     *
      * @param r - вещественная составляющая
      * @param i - первая мнимая
      * @param j - вторая мнимая
@@ -32,7 +35,7 @@ public class Quaternion {
     /**
      * Готовый для вращения кватернион
      *
-     * @param angle в градусах
+     * @param angle  в градусах
      * @param vector rotation axis
      */
     public Quaternion(float angle, Vector3 vector) {
@@ -58,6 +61,7 @@ public class Quaternion {
 
     /**
      * Создание кватерниона вращения из вектора.
+     *
      * @param vector
      */
     public Quaternion(Vector3 vector) {
@@ -68,8 +72,10 @@ public class Quaternion {
         squaredLength = r * r + i * i + j * j + k * k;
         length = (float) Math.sqrt(squaredLength);
     }
+
     /**
      * Получение второй мнимой части
+     *
      * @return
      */
     public float getJ() {
@@ -78,6 +84,7 @@ public class Quaternion {
 
     /**
      * Получение первой мнимой части
+     *
      * @return
      */
     public float getI() {
@@ -90,8 +97,10 @@ public class Quaternion {
     public float getR() {
         return r;
     }
+
     /**
      * Получение третьей мнимой части
+     *
      * @return
      */
     public float getK() {
@@ -132,17 +141,17 @@ public class Quaternion {
     }
 
     Quaternion normalize() {
-        if (length == 0){
+        if (length == 0) {
             return Quaternion.ZERO;
         }
         return new Quaternion(r / length, i / length, j / length, k / length);
     }
 
     Quaternion back() {
-        if (length == 0){
+        if (length == 0) {
             return Quaternion.ZERO.back();
         }
-        return conjugate().mul(new Quaternion(1/squaredLength,0,0,0));
+        return conjugate().mul(new Quaternion(1 / squaredLength, 0, 0, 0));
     }
 
     Quaternion rotate(Quaternion b) {
@@ -165,9 +174,21 @@ public class Quaternion {
         return this.rotateX(angles.getX()).rotateY(angles.getY()).rotateZ(angles.getZ());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Quaternion that)) return false;
+        return Float.compare(getR(), that.getR()) == 0 && Float.compare(getI(), that.getI()) == 0 && Float.compare(getJ(), that.getJ()) == 0 && Float.compare(getK(), that.getK()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getR(), getI(), getJ(), getK());
+    }
+
     public String toString() {
         return "Q(" + r + ", " + i + ", " + j + ", " + k + ")";
     }
+
     public boolean equals(Quaternion q) {
         return q.r == r && q.i == i && q.j == j && q.k == k;
     }

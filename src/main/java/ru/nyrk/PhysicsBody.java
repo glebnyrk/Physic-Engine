@@ -12,55 +12,22 @@ import java.util.Collection;
  */
 public class PhysicsBody extends OrientationReturn {
     private final ImpulseMap impulse = new ImpulseMap(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO);
+    private final Hitbox[] hitBoxes;
     private float mass;
-
-    /**
-     * @return - масса объекта в килограммах
-     */
-    public float getMass() {
-        return mass;
-    }
-
-    /**
-     * Изменяет массу объекта.
-     * @param mass - новая масса объекта в килограммах
-     */
-    public void setMass(float mass) {
-        this.mass = mass;
-    }
-
     private Vector3 position;
     private Quaternion rotation;
     private Vector3 size;
-
-    /**
-     * Установить статичный размер (может измениться)
-     * @param size - новый полуразмер
-     */
-    public void setSize(@NotNull Vector3 size) {
-        this.size = size;
-    }
-
-    private Vector3 delta_size;
-    private final Hitbox[] hitBoxes;
+    private final Vector3 delta_size;
     private PhysicsScene myScene;
     private boolean isStatic;
-
-    /**
-     * Даёт возможность заблокировать объект в пространстве. Лишает физики, но позволяет перемещать с помощью move() и safeMove()
-     * @param isStatic true - заблокировать; false - разблокировать
-     */
-    public void setStatic(boolean isStatic) {
-        this.isStatic = isStatic;
-    }
-
     /**
      * Полный конструктор. Используйте PhysicsBodyBuilder
-     * @param pos - позиция
-     * @param rot - поворот
+     *
+     * @param pos   - позиция
+     * @param rot   - поворот
      * @param sizeN - размер
-     * @param h - массив хитбоксов. Должны быть привязаны к объекту
-     * @param isS - создать объект изначально статичным
+     * @param h     - массив хитбоксов. Должны быть привязаны к объекту
+     * @param isS   - создать объект изначально статичным
      * @param sizeD - динамический размер
      */
     PhysicsBody(Vector3 pos,
@@ -92,6 +59,31 @@ public class PhysicsBody extends OrientationReturn {
         impulse.setCornerImpulse(ImpulseCorner.TFT, impulseTFT);
         impulse.setCornerImpulse(ImpulseCorner.TTF, impulseTTF);
         impulse.setCornerImpulse(ImpulseCorner.TTT, impulseTTT);
+    }
+
+    /**
+     * @return - масса объекта в килограммах
+     */
+    public float getMass() {
+        return mass;
+    }
+
+    /**
+     * Изменяет массу объекта.
+     *
+     * @param mass - новая масса объекта в килограммах
+     */
+    public void setMass(float mass) {
+        this.mass = mass;
+    }
+
+    /**
+     * Даёт возможность заблокировать объект в пространстве. Лишает физики, но позволяет перемещать с помощью move() и safeMove()
+     *
+     * @param isStatic true - заблокировать; false - разблокировать
+     */
+    public void setStatic(boolean isStatic) {
+        this.isStatic = isStatic;
     }
 
     /**
@@ -139,7 +131,17 @@ public class PhysicsBody extends OrientationReturn {
     }
 
     /**
+     * Установить статичный размер (может измениться)
+     *
+     * @param size - новый полуразмер
+     */
+    public void setSize(@NotNull Vector3 size) {
+        this.size = size;
+    }
+
+    /**
      * Проверяет, сталкиваются ли два объекта
+     *
      * @param otherBody объект
      */
     public final boolean collidesWith(@NotNull PhysicsBody otherBody) {
@@ -157,10 +159,12 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Проверяет сразу всю коллекцию на столкновения
+     *
      * @param other - коллекция
      * @return - объект с которым произошло столкновение (возвращает null если коллизий не произошло)
      */
-    public @Nullable final PhysicsBody collidesWith(@NotNull Collection<PhysicsBody> other) {
+    public @Nullable
+    final PhysicsBody collidesWith(@NotNull Collection<PhysicsBody> other) {
         for (PhysicsBody physicsBody : other) {
             if (collidesWith(physicsBody)) {
                 return physicsBody;
@@ -185,6 +189,7 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Обрабатывает impulses для симуляции физики. Используются плагины физики PhysicsPlugin
+     *
      * @param deltaTime - задержка с прошлого вызова в секундах
      */
     public void physicsTick(float deltaTime) {
@@ -198,6 +203,7 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Обрабатывает импульсы и отражает их в случае столкновений
+     *
      * @param deltaTime - задержка с прошлого вызова в секундах
      */
     public void motionTick(float deltaTime) {
@@ -209,6 +215,7 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Добавляет импульс
+     *
      * @param v вектор импульса
      */
     public void addImpulse(Vector3 v) {
@@ -217,6 +224,7 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Умножение импульса на число
+     *
      * @param b - число
      */
     public void multiplyImpulse(float b) {
@@ -225,6 +233,7 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Получение общего (сумма всех импульсов на углах) импульса
+     *
      * @return вектор импульса
      */
     public @NotNull Vector3 getImpulse() {
@@ -233,6 +242,7 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Получение импульса конкретного угла
+     *
      * @param corner угол импульс которого нужно получить
      */
     public @NotNull Vector3 getImpulse(ImpulseCorner corner) {
@@ -241,8 +251,9 @@ public class PhysicsBody extends OrientationReturn {
 
     /**
      * Сдвигает и поворачивает объект (без учета коллизий)
-     * @param velocity - скорость с которой надо сдвинуть
-     * @param rot - кватернион вращения на который нужно повернуть
+     *
+     * @param velocity  - скорость с которой надо сдвинуть
+     * @param rot       - кватернион вращения на который нужно повернуть
      * @param deltaTime - задержка с прошлого вызова / время для вычисления дальности сдвига и поворота
      */
     public void move(Vector3 velocity, Quaternion rot, float deltaTime) {
@@ -251,10 +262,12 @@ public class PhysicsBody extends OrientationReturn {
         position = position.add(velocity);
         rotation = rotation.rotate(newRotation);
     }
+
     /**
      * Сдвигает и поворачивает объект (с учетом коллизий)
-     * @param velocity - скорость с которой надо сдвинуть
-     * @param rot - кватернион вращения на который нужно повернуть
+     *
+     * @param velocity  - скорость с которой надо сдвинуть
+     * @param rot       - кватернион вращения на который нужно повернуть
      * @param deltaTime - задержка с прошлого вызова / время для вычисления дальности сдвига и поворота
      * @return объект с которым произошло столкновение во время движения (если столкновения не произошло, возвращает null)
      */
@@ -264,7 +277,7 @@ public class PhysicsBody extends OrientationReturn {
             velocity = velocity.mul(0.5f);
             move(velocity, rot, deltaTime);
             PhysicsBody collidesWith = collidesWith(myScene.getRaws(this));
-            if (collidesWith != null){
+            if (collidesWith != null) {
                 _r = collidesWith;
             }
             boolean collides = collidesWith != null;
@@ -273,5 +286,8 @@ public class PhysicsBody extends OrientationReturn {
             }
         }
         return _r;
+    }
+    public @NotNull AABB getAABB() {
+        return new AABB(this);
     }
 }

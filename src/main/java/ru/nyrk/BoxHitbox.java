@@ -1,5 +1,7 @@
 package ru.nyrk;
 
+import org.jetbrains.annotations.Nullable;
+
 public class BoxHitbox extends Hitbox {
     private final boolean isStatic;
     private final OrientationReturn orientation;
@@ -62,7 +64,7 @@ public class BoxHitbox extends Hitbox {
      */
     @Override
     public boolean collidesWith(Hitbox other) {
-        return clearBoxCollideCheck((BoxHitbox) other);
+        return clearBoxCollideCheck(other) != null;
     }
 
     /**
@@ -71,50 +73,83 @@ public class BoxHitbox extends Hitbox {
      * @param other
      * @return
      */
-    public boolean clearBoxCollideCheck(BoxHitbox other) {
-        Quaternion xAxis = new Quaternion(new Vector3(1,0,0));
-        Quaternion yAxis = new Quaternion(new Vector3(0,1,0));
-        Quaternion zAxis = new Quaternion(new Vector3(0,0,1));
+    @Nullable
+    public Vector3 clearBoxCollideCheck(Hitbox other) {
+        Vector3[] myNormals = getNormals(true);
+        Vector3[] otherNormals = other.getNormals(true);
+        Vector3[] crossNormals = new Vector3[myNormals.length * otherNormals.length];
+        for (int i = 0; i < myNormals.length; i++) {
+            for (int j = 0; j < otherNormals.length; j++) {
+                crossNormals[i + j * otherNormals.length] = myNormals[i].mul(otherNormals[j]);
+            }
+        }
+        Vector3 minVector3 = new Vector3(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        for (Vector3 axis : myNormals) {
+            float overlap = overlaps(other, axis);
+            if (overlap < 0) {
+                return null;
+            }
+            if (overlap < minVector3.length()) {
+                minVector3 = axis.mul(overlap);
+            }
+        }
+        for (Vector3 axis : otherNormals) {
+            float overlap = overlaps(other, axis);
+            if (overlap < 0) {
+                return null;
+            }
+            if (overlap < minVector3.length()) {
+                minVector3 = axis.mul(overlap);
+            }
+        }
+        for (Vector3 axis : crossNormals) {
+            float overlap = overlaps(other, axis);
+            if (overlap < 0) {
+                return null;
+            }
+            if (overlap < minVector3.length()) {
+                minVector3 = axis.mul(overlap);
+            }
+        }
+        return minVector3;
+    }
+
+    private float overlaps(Hitbox other, Vector3 axis) {
+        float[] p1 = projection(axis);
+        float[] p2 = other.projection(axis);
+        float p1min = min(p1);
+        float p1max = max(p1);
+        float p2max = max(p2);
+        float p2min = min(p2);
+        return overlap(p1min, p1max, p2min, p2max);
+    }
+
+    public Vector3[] getNormals(boolean includeInverted) {
+        Quaternion xAxis = new Quaternion(new Vector3(1, 0, 0));
+        Quaternion yAxis = new Quaternion(new Vector3(0, 1, 0));
+        Quaternion zAxis = new Quaternion(new Vector3(0, 0, 1));
         Vector3 y = new Vector3(yAxis.rotate(getRotation()));
         Vector3 x = new Vector3(xAxis.rotate(getRotation()));
         Vector3 z = new Vector3(zAxis.rotate(getRotation()));
-        Vector3 x1 = new Vector3(xAxis.rotate(other.getRotation()));
-        Vector3 y1 = new Vector3(yAxis.rotate(other.getRotation()));
-        Vector3 z1 = new Vector3(zAxis.rotate(other.getRotation()));
+        if (!includeInverted) {
+            return new Vector3[]{x, y, z};
+        } else {
+            return new Vector3[]{x, y, z, x.mul(-1), y.mul(-1), z.mul(-1)};
+        }
+    }
 
-        Vector3[] axes = new Vector3[]{
-                x,
-                y,
-                z,
-                x1,
-                y1,
-                z1,
-                x.mul(x1),
-                x.mul(y1),
-                x.mul(z1),
-                y.mul(x1),
-                y.mul(y1),
-                y.mul(z1),
-                z.mul(x1),
-                z.mul(y1),
-                z.mul(z1)
+    @Override
+    public Vector3[] getPoints() {
+        return new Vector3[]{
+                getGlobalCorner(false, false, false),
+                getGlobalCorner(false, false, true),
+                getGlobalCorner(false, true, false),
+                getGlobalCorner(false, true, true),
+                getGlobalCorner(true, false, false),
+                getGlobalCorner(true, false, true),
+                getGlobalCorner(true, true, false),
+                getGlobalCorner(true, true, true)
         };
-        for (int i = 0; i < axes.length; i++) {
-            axes[i] = axes[i].normalize();
-        }
-        for (Vector3 axis : axes) {
-            float[] p1 = projection(axis);
-            float[] p2 = other.projection(axis);
-            float p1min = min(p1);
-            float p1max = max(p1);
-            float p2max = max(p2);
-            float p2min = min(p2);
-            boolean collides = overlap(p1min, p1max, p2min, p2max) >= 0;
-            if (!collides) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private float overlap(float min1, float max1, float min2, float max2) {
@@ -127,16 +162,13 @@ public class BoxHitbox extends Hitbox {
      * @return
      */
     public float[] projection(Vector3 axis) {
-        return new float[]{
-                getGlobalCorner(false, false, false).scalar(axis),
-                getGlobalCorner(false, false, true).scalar(axis),
-                getGlobalCorner(false, true, false).scalar(axis),
-                getGlobalCorner(false, true, true).scalar(axis),
-                getGlobalCorner(true, false, false).scalar(axis),
-                getGlobalCorner(true, false, true).scalar(axis),
-                getGlobalCorner(true, true, false).scalar(axis),
-                getGlobalCorner(true, true, true).scalar(axis),
-        };
+        axis = axis.normalize();
+        float[] projections = new float[8];
+        Vector3[] points = getPoints();
+        for (int i = 0; i < projections.length; i++) {
+            projections[i] = points[i].scalar(axis);
+        }
+        return projections;
     }
 
     private float max(float... nums) {
@@ -188,6 +220,7 @@ public class BoxHitbox extends Hitbox {
     public Vector3 getGlobalCorner(boolean x, boolean y, boolean z) {
         return translateToGlobal(getCorner(x, y, z));
     }
+
     private boolean isMyLocalPointInside(Vector3 point) {
         float x = point.getX();
         float y = point.getY();

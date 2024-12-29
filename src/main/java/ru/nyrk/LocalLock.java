@@ -3,13 +3,13 @@ package ru.nyrk;
 /**
  * Позволяет очень удобно зафиксировать ориентацию локально другой
  */
-public class LocalLock extends OrientationReturn{
+public class LocalLock extends OrientationReturn {
     private final OrientationReturn orientation;
     private final OrientationReturn localOrientation;
 
     /**
      * @param original ориентация относительно которой производятся вычисления (глобальная)
-     * @param local локальная ориентация
+     * @param local    локальная ориентация
      */
     LocalLock(OrientationReturn original, OrientationReturn local) {
         orientation = original;

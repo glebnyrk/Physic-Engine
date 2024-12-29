@@ -13,8 +13,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-
-
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
@@ -27,5 +25,50 @@
             <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- Основная библиотека LWJGL -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>3.3.4</version>
+        </dependency>
+        <!-- Модуль LWJGL для работы с GLFW -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <version>3.3.4</version>
+        </dependency>
+        <!-- Модуль LWJGL для работы с OpenGL -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <version>3.3.4</version>
+        </dependency>
+        <!-- Нативные библиотеки LWJGL для вашего операционной системы -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>3.3.4</version>
+            <classifier>natives-windows
+            </classifier> <!-- Замените "windows" на "linux" или "macos", в зависимости от вашей ОС -->
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <version>3.3.4</version>
+            <classifier>natives-windows</classifier> <!-- Замените "windows" на "linux" или "macos" -->
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <version>3.3.4</version>
+            <classifier>natives-windows</classifier> <!-- Замените "windows" на "linux" или "macos" -->
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jcuda/jcurand -->
+        <dependency>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcurand</artifactId>
+            <version>12.6.0</version>
+        </dependency>
+
     </dependencies>
 </project>

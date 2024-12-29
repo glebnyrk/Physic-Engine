@@ -21,7 +21,7 @@ class OrientationReturnTest {
 
     @Test
     public void testDistance() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             BoxHitbox boxHitbox = new BoxHitbox(new Vector3(0, 0, 0), new Vector3(1, 1, 1), new Quaternion(r(), r(), r(), r()));
             Vector3 l = new Vector3(1, 1, 1);
             Assertions.assertEquals(boxHitbox.translateToGlobal(l).length(), Math.sqrt(3), 0.01f);
