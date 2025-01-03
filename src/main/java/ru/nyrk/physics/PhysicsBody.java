@@ -1,16 +1,25 @@
-package ru.nyrk;
+package ru.nyrk.physics;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.nyrk.physics_plugins.FallingPower;
-import ru.nyrk.physics_plugins.WindagePlugin;
+import ru.nyrk.hitboxes.AABB;
+import ru.nyrk.BVH.BVHChild;
+import ru.nyrk.BVH.BVHTreePart;
+import ru.nyrk.hitboxes.Hitbox;
+import ru.nyrk.maths.Quaternion;
+import ru.nyrk.maths.Vector3;
+import ru.nyrk.orientation_providers.OrientationReturn;
+import ru.nyrk.physics.plugins.FallingPower;
+import ru.nyrk.physics.plugins.WindagePlugin;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Объект описывающий физический объект на сцене
  */
-public class PhysicsBody extends OrientationReturn {
+public class PhysicsBody extends OrientationReturn implements BVHChild {
     private final ImpulseMap impulse = new ImpulseMap(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO);
     private final Hitbox[] hitBoxes;
     private float mass;
@@ -20,6 +29,8 @@ public class PhysicsBody extends OrientationReturn {
     private final Vector3 delta_size;
     private PhysicsScene myScene;
     private boolean isStatic;
+    private BVHTreePart parent;
+    private boolean deleteOrder = false;
     /**
      * Полный конструктор. Используйте PhysicsBodyBuilder
      *
@@ -117,7 +128,7 @@ public class PhysicsBody extends OrientationReturn {
     /**
      * @return кватернион вращения
      */
-    public @NotNull Quaternion getRotation() {
+    public Quaternion getRotation() {
         return rotation;
     }
 
@@ -177,6 +188,9 @@ public class PhysicsBody extends OrientationReturn {
      * Радиус сферы предварительной проверки коллизий
      */
     public final float rawRadius() {
+        if (hitBoxes == null || hitBoxes.length == 0) {
+            return 0;
+        }
         float maxDistance = 0;
         for (Hitbox hitbox : hitBoxes) {
             float currentDistance = hitbox.getRawRadius() + hitbox.getCenter().distance(position);
@@ -288,6 +302,83 @@ public class PhysicsBody extends OrientationReturn {
         return _r;
     }
     public @NotNull AABB getAABB() {
-        return new AABB(this);
+        return new AABB(List.of(this));
+    }
+
+    @Override
+    public Vector3 getMin() {
+        float rr = rawRadius();
+        return getCenter().sub(new Vector3(rr, rr, rr));
+    }
+    @Override
+    public Vector3 getMax() {
+        float rr = rawRadius();
+        return getCenter().add(new Vector3(rr, rr, rr));
+    }
+    @Override
+    public int getDeep() {
+        return 0;
+    }
+    private static final ArrayList<PhysicsBody> emptyBodies = new ArrayList<>();
+    @Override
+    public List<PhysicsBody> rawCollides(@NotNull PhysicsBody other) {
+        return other.getAABB().collide(getAABB()) ? List.of(this) : emptyBodies;
+    }
+
+    @Override
+    public String toString(int indent) {
+        String spaces = spaces(indent + 1);
+        String spaces1 = spaces(indent);
+        return spaces1 + "PhysicsBody(" + getAABBVolume() +"){\n" +
+                spaces + "Position: " + position + ";\n"
+                + spaces1 + "}";
+    }
+
+    @Override
+    public int getCount() {
+        return 1;
+    }
+
+    @Override
+    public Vector3 getVelocity() {
+        return getImpulse().mul(1/mass);
+    }
+
+    private String spaces(int count) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append("|   ");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    @Override
+    public float getAABBVolume() {
+        return getAABB().getVolume();
+    }
+
+    @Override
+    public BVHTreePart getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(BVHTreePart newParent) {
+        this.parent = newParent;
+    }
+
+    @Override
+    public void yieldDelete() {
+        deleteOrder = true;
+    }
+
+    @Override
+    public boolean isInDeleteOrder() {
+        return deleteOrder;
     }
 }

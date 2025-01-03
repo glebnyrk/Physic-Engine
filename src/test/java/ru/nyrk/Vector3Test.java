@@ -2,8 +2,7 @@ package ru.nyrk;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import ru.nyrk.maths.Vector3;
 
 class Vector3Test {
     @Test

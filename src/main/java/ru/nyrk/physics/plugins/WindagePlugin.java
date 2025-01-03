@@ -1,6 +1,6 @@
-package ru.nyrk.physics_plugins;
+package ru.nyrk.physics.plugins;
 
-import ru.nyrk.PhysicsBody;
+import ru.nyrk.physics.PhysicsBody;
 
 public class WindagePlugin implements PhysicsPlugin{
     @Override

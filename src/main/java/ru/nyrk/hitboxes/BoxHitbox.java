@@ -1,13 +1,14 @@
-package ru.nyrk;
+package ru.nyrk.hitboxes;
 
 import org.jetbrains.annotations.Nullable;
+import ru.nyrk.maths.Quaternion;
+import ru.nyrk.maths.Vector3;
+import ru.nyrk.orientation_providers.OrientationReturn;
+import ru.nyrk.orientation_providers.StaticOrientation;
+import ru.nyrk.physics.ImpulseCorner;
 
 public class BoxHitbox extends Hitbox {
-    private final boolean isStatic;
     private final OrientationReturn orientation;
-    private Vector3 position;
-    private Vector3 size;
-    private Quaternion rotation;
 
     /**
      * Создание статического хитбокса
@@ -16,12 +17,8 @@ public class BoxHitbox extends Hitbox {
      * @param size     - полуразмер
      * @param rotation - квантерион вращения
      */
-    BoxHitbox(Vector3 position, Vector3 size, Quaternion rotation) {
-        this.position = position;
-        this.size = size;
-        this.rotation = rotation.length() == 1 ? rotation : rotation.normalize();
-        this.isStatic = true;
-        orientation = null;
+    public BoxHitbox(Vector3 position, Vector3 size, Quaternion rotation) {
+        orientation = new StaticOrientation(position, size, rotation);
     }
 
     /**
@@ -30,12 +27,8 @@ public class BoxHitbox extends Hitbox {
      * @param position - центр
      * @param size     - полуразмер
      */
-    BoxHitbox(Vector3 position, Vector3 size) {
-        this.position = position;
-        this.size = size;
-        this.rotation = new Quaternion(1, 0, 0, 0);
-        this.isStatic = true;
-        orientation = null;
+    public BoxHitbox(Vector3 position, Vector3 size) {
+        this(position,size,Quaternion.ZERO);
     }
 
     /**
@@ -43,19 +36,14 @@ public class BoxHitbox extends Hitbox {
      *
      * @param position - центр
      */
-    BoxHitbox(Vector3 position) {
-        this.position = position;
-        this.size = new Vector3(1, 1, 1);
-        this.rotation = new Quaternion(1, 0, 0, 0);
-        this.isStatic = true;
-        orientation = null;
+    public BoxHitbox(Vector3 position) {
+        this(position,Vector3.ONE);
     }
 
     /**
      * Создание динамичного хитбокса привязанного к значениям orientation
      */
-    BoxHitbox(OrientationReturn orientation) {
-        this.isStatic = false;
+    public BoxHitbox(OrientationReturn orientation) {
         this.orientation = orientation;
     }
 
@@ -248,33 +236,16 @@ public class BoxHitbox extends Hitbox {
 
     @Override
     public Vector3 getCenter() {
-        if (isStatic) {
-            return position;
-        } else {
-            return orientation.getCenter();
-        }
+        return orientation.getCenter();
     }
 
     @Override
     public Vector3 getSize() {
-        if (isStatic) {
-            return size;
-        } else {
-            return orientation.getSize();
-        }
+        return orientation.getSize();
     }
 
     @Override
     public Quaternion getRotation() {
-        if (isStatic) {
-            return rotation.normalize();
-        } else {
-            return orientation.getRotation().normalize();
-        }
-    }
-
-    @Override
-    public boolean isStatic() {
-        return isStatic;
+        return orientation.getRotation().normalize();
     }
 }

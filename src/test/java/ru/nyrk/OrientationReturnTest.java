@@ -2,6 +2,9 @@ package ru.nyrk;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.nyrk.hitboxes.BoxHitbox;
+import ru.nyrk.maths.Quaternion;
+import ru.nyrk.maths.Vector3;
 
 import static org.junit.jupiter.api.Assertions.*;
 

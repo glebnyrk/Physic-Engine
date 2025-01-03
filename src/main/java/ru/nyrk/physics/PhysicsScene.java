@@ -1,4 +1,6 @@
-package ru.nyrk;
+package ru.nyrk.physics;
+
+import ru.nyrk.maths.Vector3;
 
 import java.util.ArrayList;
 
@@ -88,7 +90,8 @@ public abstract class PhysicsScene implements Runnable {
     /**
      * Возвращает список объектов которые могли бы пересекаться с object
      */
+    //TODO "заглушка"
     public synchronized ArrayList<PhysicsBody> getRaws(PhysicsBody object) {
-
+        return objects;
     }
 }

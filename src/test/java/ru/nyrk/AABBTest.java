@@ -2,10 +2,8 @@ package ru.nyrk;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
+import ru.nyrk.hitboxes.AABB;
+import ru.nyrk.maths.Vector3;
 
 class AABBTest {
     @Test
@@ -15,9 +13,9 @@ class AABBTest {
     }
 
     @Test
-    public void volumeTest() {
-        Assertions.assertTrue(new AABB(new Vector3(5, 6, 7), new Vector3(-5, -7, -2)).volume() == 1170);
-        Assertions.assertTrue(new AABB(new Vector3(3.5f, 6.7f, 28.64f), new Vector3(0.5f, 0.7f, 0.64f)).volume() == 3 * 6 * 28);
+    public void getVolumeTest() {
+        Assertions.assertTrue(new AABB(new Vector3(5, 6, 7), new Vector3(-5, -7, -2)).getVolume() == 1170);
+        Assertions.assertTrue(new AABB(new Vector3(3.5f, 6.7f, 28.64f), new Vector3(0.5f, 0.7f, 0.64f)).getVolume() == 3 * 6 * 28);
     }
 
     @Test
@@ -70,6 +68,21 @@ class AABBTest {
             AABB a = new AABB(new Vector3(-1, -1, 1), new Vector3(1, 1, 1));
             AABB b = new AABB(new Vector3(-1, -10, -1), new Vector3(1, -8, 1));
             Assertions.assertFalse(a.collide(b));
+        }
+        {
+            AABB a = new AABB(new Vector3(-1, -1, 1), new Vector3(1, 1, 1));
+            AABB b = new AABB(new Vector3(-10, -10, -10), new Vector3(10, 10, 10));
+            Assertions.assertTrue(a.collide(b));
+            Assertions.assertTrue(b.collide(a));
+        }
+    }
+    @Test
+    void fromAABBS(){
+        {
+            AABB a = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            AABB b = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            AABB c = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            Assertions.assertEquals(new AABB(a,b),c);
         }
     }
 }

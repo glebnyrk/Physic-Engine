@@ -1,19 +1,4 @@
 package ru.nyrk;
-
-import jcuda.Pointer;
-import jcuda.Sizeof;
-import jcuda.jcurand.curandGenerator;
-
-import java.nio.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static jcuda.jcurand.JCurand.*;
-import static jcuda.jcurand.curandRngType.CURAND_RNG_PSEUDO_DEFAULT;
-import static jcuda.runtime.JCuda.*;
-import static jcuda.runtime.cudaMemcpyKind.cudaMemcpyDeviceToHost;
-
 public class SceneTest {
     private long window;
     private float cameraX = 0f;

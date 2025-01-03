@@ -1,4 +1,7 @@
-package ru.nyrk;
+package ru.nyrk.orientation_providers;
+
+import ru.nyrk.maths.Quaternion;
+import ru.nyrk.maths.Vector3;
 
 /**
  * Фундамент для иерархии привязок объектов друг к другу
@@ -7,21 +10,21 @@ public abstract class OrientationReturn {
     /**
      * Получение центра
      */
-    abstract Vector3 getCenter();
+    public abstract Vector3 getCenter();
 
     /**
      * Получение поворота
      *
      * @return
      */
-    abstract Vector3 getSize();
+    public abstract Vector3 getSize();
 
     /**
      * Получение поворота вращения
      *
      * @return
      */
-    abstract Quaternion getRotation();
+    public abstract Quaternion getRotation();
 
     /**
      * Перевести глобальную точку в локальную

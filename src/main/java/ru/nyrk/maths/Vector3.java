@@ -1,4 +1,4 @@
-package ru.nyrk;
+package ru.nyrk.maths;
 
 public class Vector3 {
     public static final Vector3 ZERO = new Vector3(0.0f, 0.0f, 0.0f);
@@ -9,6 +9,8 @@ public class Vector3 {
     public static final Vector3 NEGATIVE_Y = new Vector3(0f, -1f, 0.0f);
     public static final Vector3 Z = new Vector3(0f, 0f, 1f);
     public static final Vector3 NEGATIVE_Z = new Vector3(0f, 0f, -1f);
+    public static final Vector3 INFINITY = new Vector3(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+    public static final Vector3 NEGATIVE_INFINITY = new Vector3(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
     final private float x;
     final private float y;
     final private float z;
@@ -107,12 +109,31 @@ public class Vector3 {
                 (y <= b.getY() + delta && y >= b.getY() - delta) &&
                 (z <= b.getZ() + delta && z >= b.getZ() - delta);
     }
-
-    boolean moreThan(Vector3 b) {
+    public Vector3 min(Vector3 b) {
+        float xmin = Math.min(x, b.getX());
+        float ymin = Math.min(y, b.getY());
+        float zmin = Math.min(z, b.getZ());
+        return new Vector3(xmin, ymin, zmin);
+    }
+    public Vector3 max(Vector3 b) {
+        if (this.equals(b)) {
+            return this;
+        }
+        float xmax = Math.max(x, b.getX());
+        float ymax = Math.max(y, b.getY());
+        float zmax = Math.max(z, b.getZ());
+        if (xmax == x && ymax == y && zmax == z) {
+            return this;
+        } else if (xmax == b.getX() && ymax == b.getY() && zmax == b.getZ()) {
+            return b;
+        }
+        return new Vector3(xmax, ymax, zmax);
+    }
+    public boolean moreThan(Vector3 b) {
         return b.x < x && b.y < y && b.z < z;
     }
 
-    boolean lessThan(Vector3 b) {
+    public boolean lessThan(Vector3 b) {
         return b.x > x && b.y > y && b.z > z;
     }
 }

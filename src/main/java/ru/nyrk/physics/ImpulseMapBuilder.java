@@ -1,4 +1,6 @@
-package ru.nyrk;
+package ru.nyrk.physics;
+
+import ru.nyrk.maths.Vector3;
 
 public class ImpulseMapBuilder {
     private Vector3 fffCorner = Vector3.ZERO;

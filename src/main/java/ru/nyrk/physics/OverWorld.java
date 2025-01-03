@@ -1,4 +1,6 @@
-package ru.nyrk;
+package ru.nyrk.physics;
+
+import ru.nyrk.maths.Vector3;
 
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledExecutorService;

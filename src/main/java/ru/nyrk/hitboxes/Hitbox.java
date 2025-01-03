@@ -1,6 +1,11 @@
-package ru.nyrk;
+package ru.nyrk.hitboxes;
 
-public abstract class Hitbox extends OrientationReturn {
+import ru.nyrk.BVH.AABLike;
+import ru.nyrk.maths.Quaternion;
+import ru.nyrk.maths.Vector3;
+import ru.nyrk.orientation_providers.OrientationReturn;
+
+public abstract class Hitbox extends OrientationReturn implements AABLike {
     /**
      * Проверяет коллизию себя с other
      */
@@ -41,11 +46,18 @@ public abstract class Hitbox extends OrientationReturn {
     public abstract Vector3[] getPoints();
 
     public abstract float[] projection(Vector3 axis);
-
-    /**
-     * Проверяет не является ли хитбокс статичным.
-     *
-     * @return
-     */
-    public abstract boolean isStatic();
+    public final Vector3 support(Vector3 axis) {
+        axis = axis.normalize();
+        Vector3[] points = getPoints();
+        float max = Float.NEGATIVE_INFINITY;
+        Vector3 maxPoint = Vector3.ZERO;
+        for (Vector3 point : points) {
+            float scalar = point.scalar(axis);
+            if (scalar > max){
+                max = scalar;
+                maxPoint = point;
+            }
+        }
+        return maxPoint;
+    }
 }

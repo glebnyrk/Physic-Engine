@@ -1,4 +1,8 @@
-package ru.nyrk;
+package ru.nyrk.physics;
+
+import ru.nyrk.hitboxes.Hitbox;
+import ru.nyrk.maths.Quaternion;
+import ru.nyrk.maths.Vector3;
 
 public class PhysicsBodyBuilder {
     private Vector3 pos = Vector3.ZERO;

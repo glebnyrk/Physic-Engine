@@ -1,4 +1,4 @@
-package ru.nyrk;
+package ru.nyrk.physics;
 
 public enum ImpulseCorner {
     /**

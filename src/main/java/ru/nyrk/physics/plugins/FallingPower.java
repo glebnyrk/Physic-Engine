@@ -1,8 +1,8 @@
-package ru.nyrk.physics_plugins;
+package ru.nyrk.physics.plugins;
 
-import ru.nyrk.PhysicsBody;
-import ru.nyrk.PhysicsScene;
-import ru.nyrk.Vector3;
+import ru.nyrk.physics.PhysicsBody;
+import ru.nyrk.physics.PhysicsScene;
+import ru.nyrk.maths.Vector3;
 
 public class FallingPower implements PhysicsPlugin{
     @Override
