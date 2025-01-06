@@ -1,14 +1,27 @@
 package ru.nyrk.hitboxes;
 
-import org.jetbrains.annotations.Nullable;
 import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
 import ru.nyrk.orientation_providers.OrientationReturn;
 import ru.nyrk.orientation_providers.StaticOrientation;
 import ru.nyrk.physics.ImpulseCorner;
 
-public class BoxHitbox extends Hitbox {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class BoxHitBox implements MeshHitBox {
     private final OrientationReturn orientation;
+    private static final List<Vector3> points = Collections.unmodifiableList(List.of(
+            new Vector3(-1, -1, -1),
+            new Vector3(1, -1, -1),
+            new Vector3(-1, 1, -1),
+            new Vector3(1, 1, -1),
+            new Vector3(-1, -1, 1),
+            new Vector3(1, -1, 1),
+            new Vector3(-1, 1, 1),
+            new Vector3(1, 1, 1)
+    ));
 
     /**
      * Создание статического хитбокса
@@ -17,7 +30,7 @@ public class BoxHitbox extends Hitbox {
      * @param size     - полуразмер
      * @param rotation - квантерион вращения
      */
-    public BoxHitbox(Vector3 position, Vector3 size, Quaternion rotation) {
+    public BoxHitBox(Vector3 position, Vector3 size, Quaternion rotation) {
         orientation = new StaticOrientation(position, size, rotation);
     }
 
@@ -27,8 +40,8 @@ public class BoxHitbox extends Hitbox {
      * @param position - центр
      * @param size     - полуразмер
      */
-    public BoxHitbox(Vector3 position, Vector3 size) {
-        this(position,size,Quaternion.ZERO);
+    public BoxHitBox(Vector3 position, Vector3 size) {
+        this(position, size, Quaternion.ZERO);
     }
 
     /**
@@ -36,75 +49,20 @@ public class BoxHitbox extends Hitbox {
      *
      * @param position - центр
      */
-    public BoxHitbox(Vector3 position) {
-        this(position,Vector3.ONE);
+    public BoxHitBox(Vector3 position) {
+        this(position, Vector3.ONE);
     }
 
     /**
      * Создание динамичного хитбокса привязанного к значениям orientation
      */
-    public BoxHitbox(OrientationReturn orientation) {
+    public BoxHitBox(OrientationReturn orientation) {
         this.orientation = orientation;
     }
 
-    /**
-     * Оптимально проверят коллизии с other
-     */
-    @Override
-    public boolean collidesWith(Hitbox other) {
-        return clearBoxCollideCheck(other) != null;
-    }
-
-    /**
-     * Полностью проверяет коллизии с other
-     *
-     * @param other
-     * @return
-     */
-    @Nullable
-    public Vector3 clearBoxCollideCheck(Hitbox other) {
-        Vector3[] myNormals = getNormals(true);
-        Vector3[] otherNormals = other.getNormals(true);
-        Vector3[] crossNormals = new Vector3[myNormals.length * otherNormals.length];
-        for (int i = 0; i < myNormals.length; i++) {
-            for (int j = 0; j < otherNormals.length; j++) {
-                crossNormals[i + j * otherNormals.length] = myNormals[i].mul(otherNormals[j]);
-            }
-        }
-        Vector3 minVector3 = new Vector3(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        for (Vector3 axis : myNormals) {
-            float overlap = overlaps(other, axis);
-            if (overlap < 0) {
-                return null;
-            }
-            if (overlap < minVector3.length()) {
-                minVector3 = axis.mul(overlap);
-            }
-        }
-        for (Vector3 axis : otherNormals) {
-            float overlap = overlaps(other, axis);
-            if (overlap < 0) {
-                return null;
-            }
-            if (overlap < minVector3.length()) {
-                minVector3 = axis.mul(overlap);
-            }
-        }
-        for (Vector3 axis : crossNormals) {
-            float overlap = overlaps(other, axis);
-            if (overlap < 0) {
-                return null;
-            }
-            if (overlap < minVector3.length()) {
-                minVector3 = axis.mul(overlap);
-            }
-        }
-        return minVector3;
-    }
-
-    private float overlaps(Hitbox other, Vector3 axis) {
-        float[] p1 = projection(axis);
-        float[] p2 = other.projection(axis);
+    private float overlaps(MeshHitBox other, Vector3 axis) {
+        List<Float> p1 = projection(axis);
+        List<Float> p2 = other.projection(axis);
         float p1min = min(p1);
         float p1max = max(p1);
         float p2max = max(p2);
@@ -127,39 +85,15 @@ public class BoxHitbox extends Hitbox {
     }
 
     @Override
-    public Vector3[] getPoints() {
-        return new Vector3[]{
-                getGlobalCorner(false, false, false),
-                getGlobalCorner(false, false, true),
-                getGlobalCorner(false, true, false),
-                getGlobalCorner(false, true, true),
-                getGlobalCorner(true, false, false),
-                getGlobalCorner(true, false, true),
-                getGlobalCorner(true, true, false),
-                getGlobalCorner(true, true, true)
-        };
+    public List<Vector3> getLocalPoints() {
+        return points;
     }
 
     private float overlap(float min1, float max1, float min2, float max2) {
         return Math.min(max1 - min2, max2 - min1);
     }
 
-    /**
-     * проекция углов на ось axis
-     *
-     * @return
-     */
-    public float[] projection(Vector3 axis) {
-        axis = axis.normalize();
-        float[] projections = new float[8];
-        Vector3[] points = getPoints();
-        for (int i = 0; i < projections.length; i++) {
-            projections[i] = points[i].scalar(axis);
-        }
-        return projections;
-    }
-
-    private float max(float... nums) {
+    private float max(List<Float> nums) {
         float max = Float.NEGATIVE_INFINITY;
         for (float num : nums) {
             max = Math.max(max, num);
@@ -167,7 +101,7 @@ public class BoxHitbox extends Hitbox {
         return max;
     }
 
-    private float min(float... nums) {
+    private float min(List<Float> nums) {
         float min = Float.POSITIVE_INFINITY;
         for (float num : nums) {
             min = Math.min(min, num);

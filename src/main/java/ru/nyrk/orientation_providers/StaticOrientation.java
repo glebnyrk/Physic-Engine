@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
 
-public class StaticOrientation extends OrientationReturn {
+public class StaticOrientation implements OrientationReturn {
     final private Vector3 position;
     final private Vector3 size;
     final private Quaternion orientation;

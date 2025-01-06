@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.nyrk.hitboxes.AABB;
 import ru.nyrk.BVH.BVHChild;
 import ru.nyrk.BVH.BVHTreePart;
-import ru.nyrk.hitboxes.Hitbox;
+import ru.nyrk.hitboxes.MeshHitBox;
 import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
 import ru.nyrk.orientation_providers.OrientationReturn;
@@ -19,9 +19,9 @@ import java.util.List;
 /**
  * Объект описывающий физический объект на сцене
  */
-public class PhysicsBody extends OrientationReturn implements BVHChild {
+public class PhysicsBody implements BVHChild, OrientationReturn {
     private final ImpulseMap impulse = new ImpulseMap(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO);
-    private final Hitbox[] hitBoxes;
+    private final MeshHitBox[] hitBoxes;
     private float mass;
     private Vector3 position;
     private Quaternion rotation;
@@ -44,7 +44,7 @@ public class PhysicsBody extends OrientationReturn implements BVHChild {
     PhysicsBody(Vector3 pos,
                 Quaternion rot,
                 Vector3 sizeN,
-                Hitbox[] h,
+                MeshHitBox[] h,
                 boolean isS,
                 Vector3 impulseFFF,
                 Vector3 impulseFFT,
@@ -114,7 +114,7 @@ public class PhysicsBody extends OrientationReturn implements BVHChild {
     /**
      * @return массив хитбоксов объекта
      */
-    public @Nullable Hitbox[] getHitBoxes() {
+    public @Nullable MeshHitBox[] getHitBoxes() {
         return hitBoxes;
     }
 
@@ -156,9 +156,9 @@ public class PhysicsBody extends OrientationReturn implements BVHChild {
      * @param otherBody объект
      */
     public final boolean collidesWith(@NotNull PhysicsBody otherBody) {
-        Hitbox[] hitBoxes1 = otherBody.getHitBoxes();
-        for (Hitbox own : hitBoxes) {
-            for (Hitbox other : hitBoxes1) {
+        MeshHitBox[] hitBoxes1 = otherBody.getHitBoxes();
+        for (MeshHitBox own : hitBoxes) {
+            for (MeshHitBox other : hitBoxes1) {
                 boolean collide = own.collidesWith(other);
                 if (collide) {
                     return true;
@@ -192,7 +192,7 @@ public class PhysicsBody extends OrientationReturn implements BVHChild {
             return 0;
         }
         float maxDistance = 0;
-        for (Hitbox hitbox : hitBoxes) {
+        for (MeshHitBox hitbox : hitBoxes) {
             float currentDistance = hitbox.getRawRadius() + hitbox.getCenter().distance(position);
             if (currentDistance > maxDistance) {
                 maxDistance = currentDistance;

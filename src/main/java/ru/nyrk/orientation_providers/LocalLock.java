@@ -6,7 +6,7 @@ import ru.nyrk.maths.Vector3;
 /**
  * Позволяет очень удобно зафиксировать ориентацию локально другой
  */
-public class LocalLock extends OrientationReturn {
+public class LocalLock implements OrientationReturn {
     private final OrientationReturn orientation;
     private final OrientationReturn localOrientation;
 

@@ -1,9 +1,10 @@
 package ru.nyrk;
 
 import org.junit.jupiter.api.Test;
+import ru.nyrk.BVH.BVHChild;
 import ru.nyrk.BVH.BVHTreePart;
-import ru.nyrk.hitboxes.BoxHitbox;
-import ru.nyrk.hitboxes.Hitbox;
+import ru.nyrk.hitboxes.BoxHitBox;
+import ru.nyrk.hitboxes.MeshHitBox;
 import ru.nyrk.maths.Vector3;
 import ru.nyrk.orientation_providers.LocalLock;
 import ru.nyrk.orientation_providers.StaticOrientation;
@@ -35,18 +36,24 @@ class BVHTreePartTest {
         System.out.println("cubes deleted");
         bvh.serviceDeleteOrder();
         System.out.println("collector worked");
-        System.out.println(bvh);
-        System.out.println(bvh.getList());
+//        System.out.println(bvh);
+//        System.out.println(bvh.getList());
         bvh.rebuild();
-        System.out.println("bvh rebuilt");
         System.out.println(bvh);
+        System.out.println("bvh rebuilt");
+        for (BVHChild child : bvh){
+            if (child instanceof PhysicsBody){
+                System.out.println(child);
+            }
+        }
+        System.out.println("bvh iterator");
     }
 
     private PhysicsBody cube() {
-        Hitbox[] hitBoxes = new Hitbox[1];
+        MeshHitBox[] hitBoxes = new MeshHitBox[1];
         float z = 0.57735026918962576450914878f;
         PhysicsBody body = new PhysicsBodyBuilder().setSize(new Vector3(z, z, z)).setPos(new Vector3(r(), r(), r())).setHitBoxes(hitBoxes).createPhysicsBody();
-        hitBoxes[0] = new BoxHitbox(new LocalLock(body, new StaticOrientation()));
+        hitBoxes[0] = new BoxHitBox(new LocalLock(body, new StaticOrientation()));
         return body;
     }
 }

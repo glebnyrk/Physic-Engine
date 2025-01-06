@@ -1,6 +1,6 @@
 package ru.nyrk.physics;
 
-import ru.nyrk.hitboxes.Hitbox;
+import ru.nyrk.hitboxes.MeshHitBox;
 import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
 
@@ -8,7 +8,7 @@ public class PhysicsBodyBuilder {
     private Vector3 pos = Vector3.ZERO;
     private Quaternion rot = Quaternion.ZERO;
     private Vector3 size = Vector3.ONE;
-    private Hitbox[] hs = null;
+    private MeshHitBox[] hs = null;
     private boolean isS = false;
     private Vector3 impulseFFF = Vector3.ZERO;
     private Vector3 impulseFFT = Vector3.ZERO;
@@ -48,7 +48,7 @@ public class PhysicsBodyBuilder {
         return this;
     }
 
-    public PhysicsBodyBuilder setHitBoxes(Hitbox[] hsN) {
+    public PhysicsBodyBuilder setHitBoxes(MeshHitBox[] hsN) {
         this.hs = hsN;
         return this;
     }

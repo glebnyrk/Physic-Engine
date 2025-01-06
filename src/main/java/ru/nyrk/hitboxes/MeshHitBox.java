@@ -1,20 +1,15 @@
 package ru.nyrk.hitboxes;
 
-import ru.nyrk.BVH.AABLike;
-import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
-import ru.nyrk.orientation_providers.OrientationReturn;
 
-public abstract class Hitbox extends OrientationReturn implements AABLike {
-    /**
-     * Проверяет коллизию себя с other
-     */
-    public abstract boolean collidesWith(Hitbox other);
+import java.util.ArrayList;
+import java.util.List;
 
+public interface MeshHitBox extends HitBox{
     /**
      * Быстро проверяет возможность коллизии между ним и other
      */
-    public final boolean rawCollideCheck(Hitbox other) {
+    public default boolean rawCollideCheck(MeshHitBox other) {
         float radius_sum = other.getRawRadius() + getRawRadius();
         float dictation_sum = other.getCenter().distance(this.getCenter());
         return dictation_sum <= radius_sum;
@@ -33,27 +28,36 @@ public abstract class Hitbox extends OrientationReturn implements AABLike {
      *
      * @return
      */
-    public abstract float getRawRadius();
+    public float getRawRadius();
 
-    public abstract Vector3 getCenter();
+    public default List<Vector3> getGlobalPoints(){
+        List<Vector3> localPoints = getLocalPoints();
+        List<Vector3> globalPoints = new ArrayList<>(localPoints.size());
+        for (int i = 0; i < localPoints.size(); i++) {
+            globalPoints.set(i,translateToGlobal(localPoints.get(i)));
+        }
+        return globalPoints;
+    }
+    public List<Vector3> getLocalPoints();
 
-    public abstract Vector3 getSize();
-
-    public abstract Quaternion getRotation();
-
-    public abstract Vector3[] getNormals(boolean includeRepeating);
-
-    public abstract Vector3[] getPoints();
-
-    public abstract float[] projection(Vector3 axis);
-    public final Vector3 support(Vector3 axis) {
+    public default List<Float> projection(Vector3 axis){
         axis = axis.normalize();
-        Vector3[] points = getPoints();
+        List<Float> projections = new ArrayList<>(8);
+        List<Vector3> points = getGlobalPoints();
+        for (int i = 0; i < 8; i++) {
+            projections.set(i, points.get(i).scalar(axis));
+        }
+        return projections;
+    }
+
+    public default Vector3 support(Vector3 axis) {
+        axis = axis.normalize();
+        List<Vector3> points = getGlobalPoints();
         float max = Float.NEGATIVE_INFINITY;
         Vector3 maxPoint = Vector3.ZERO;
         for (Vector3 point : points) {
             float scalar = point.scalar(axis);
-            if (scalar > max){
+            if (scalar > max) {
                 max = scalar;
                 maxPoint = point;
             }

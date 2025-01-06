@@ -1,5 +1,7 @@
 package ru.nyrk.maths;
 
+import ru.nyrk.tools.MakesNewObject;
+
 import java.util.Objects;
 
 /**
@@ -106,15 +108,15 @@ public class Quaternion {
     public float getK() {
         return k;
     }
-
+    @MakesNewObject
     public Quaternion add(Quaternion b) {
         return new Quaternion(r + b.getR(), i + b.getI(), j + b.getJ(), k + b.getK());
     }
-
+    @MakesNewObject
     public Quaternion sub(Quaternion b) {
         return new Quaternion(r - b.getR(), i - b.getI(), j - b.getJ(), k - b.getK());
     }
-
+    @MakesNewObject
     public Quaternion mul(Quaternion b) {
         return new Quaternion(
                 r * b.getR() - i * b.getI() - j * b.getJ() - k * b.getK(),
@@ -123,11 +125,11 @@ public class Quaternion {
                 r * b.getK() + i * b.getJ() - j * b.getI() + k * b.getR()
         );
     }
-
+    @MakesNewObject
     public Quaternion div(Quaternion b) {
         return b.back().mul(this);
     }
-
+    @MakesNewObject
     public Quaternion conjugate() {
         return new Quaternion(r, -i, -j, -k);
     }
@@ -139,37 +141,37 @@ public class Quaternion {
     public float length() {
         return length;
     }
-
+    @MakesNewObject
     public Quaternion normalize() {
-        if (length == 0) {
-            return Quaternion.ZERO;
+        if (length == 0 || length == 1) {
+            return this;
         }
         return new Quaternion(r / length, i / length, j / length, k / length);
     }
-
+    @MakesNewObject
     public Quaternion back() {
         if (length == 0) {
             return Quaternion.ZERO.back();
         }
         return conjugate().mul(new Quaternion(1 / squaredLength, 0, 0, 0));
     }
-
+    @MakesNewObject
     public  Quaternion rotate(Quaternion b) {
         return b.mul(this).mul(b.conjugate());
     }
-
+    @MakesNewObject
     public Quaternion rotateX(float angle) {
         return this.rotate(new Quaternion(angle, new Vector3(1, 0, 0)));
     }
-
+    @MakesNewObject
     public Quaternion rotateY(float angle) {
         return this.rotate(new Quaternion(angle, new Vector3(0, 1, 0)));
     }
-
+    @MakesNewObject
     public Quaternion rotateZ(float angle) {
         return this.rotate(new Quaternion(angle, new Vector3(0, 0, 1)));
     }
-
+    @MakesNewObject
     public Quaternion eulerRotation(Vector3 angles) {
         return this.rotateX(angles.getX()).rotateY(angles.getY()).rotateZ(angles.getZ());
     }

@@ -3,14 +3,15 @@ package ru.nyrk.BVH;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.nyrk.hitboxes.AABB;
-import ru.nyrk.physics.PhysicsBody;
 import ru.nyrk.maths.Vector3;
+import ru.nyrk.physics.PhysicsBody;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
-public class BVHTreePart implements BVHChild {
+public class BVHTreePart implements BVHChild, Iterable<BVHChild> {
     private BVHChild leftChild = null;
     private BVHChild rightChild = null;
     private int cache_deep = 0;
@@ -191,18 +192,21 @@ public class BVHTreePart implements BVHChild {
                 }
             }
         }
-        fullParentUpdate();
+        update();
     }
 
     public void fullParentUpdate() {
-        updateAABB();
-        updateDeep();
-        updateCount();
+        update();
         if (parent != null) {
             parent.fullParentUpdate();
             empty();
         }
+    }
 
+    private void update() {
+        updateAABB();
+        updateDeep();
+        updateCount();
     }
 
     public void fullTreeUpdate() {
@@ -216,9 +220,7 @@ public class BVHTreePart implements BVHChild {
                 treePart.fullTreeUpdate();
             }
         }
-        updateAABB();
-        updateDeep();
-        updateCount();
+        update();
         if (parent != null) {
             empty();
         }
@@ -286,9 +288,10 @@ public class BVHTreePart implements BVHChild {
         fullParentUpdate();
         return true;
     }
-    public void flipNull(){
-        if (leftChild != null && leftChild instanceof BVHTreePart treePart) {
-            if (rightChild == null){
+
+    public void flipNull() {
+        if (leftChild instanceof BVHTreePart treePart) {
+            if (rightChild == null) {
                 setRightChild(treePart.getRightChild());
                 setLeftChild(treePart.getLeftChild());
                 if (parent != null) {
@@ -296,8 +299,8 @@ public class BVHTreePart implements BVHChild {
                 }
             }
         }
-        if (rightChild != null && rightChild instanceof BVHTreePart treePart) {
-            if (leftChild == null){
+        if (rightChild instanceof BVHTreePart treePart) {
+            if (leftChild == null) {
                 setLeftChild(treePart.getLeftChild());
                 setRightChild(treePart.getRightChild());
                 if (parent != null) {
@@ -306,6 +309,7 @@ public class BVHTreePart implements BVHChild {
             }
         }
     }
+
     public boolean parentalDelete(BVHChild child) {
         if (child != null) {
             BVHTreePart parent1 = child.getParent();
@@ -327,7 +331,7 @@ public class BVHTreePart implements BVHChild {
         if (empty()) {
             return;
         }
-        if (leftChild != null) {
+        {
             if (leftChild instanceof PhysicsBody leftBody) {
                 toAdd.add(leftBody);
             }
@@ -335,7 +339,7 @@ public class BVHTreePart implements BVHChild {
                 leftPart.getRawList(toAdd);
             }
         }
-        if (rightChild != null) {
+        {
             if (rightChild instanceof PhysicsBody rightBody) {
                 toAdd.add(rightBody);
             }
@@ -422,5 +426,10 @@ public class BVHTreePart implements BVHChild {
     @Override
     public boolean isInDeleteOrder() {
         return deleteOrder;
+    }
+
+    @Override
+    public @NotNull Iterator<BVHChild> iterator() {
+        return new BVHIterator(this);
     }
 }
