@@ -5,7 +5,7 @@ import ru.nyrk.maths.Vector3;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface MeshHitBox extends HitBox{
+public interface MeshHitBox extends HitBox {
     /**
      * Быстро проверяет возможность коллизии между ним и other
      */
@@ -30,17 +30,18 @@ public interface MeshHitBox extends HitBox{
      */
     public float getRawRadius();
 
-    public default List<Vector3> getGlobalPoints(){
+    public default List<Vector3> getGlobalPoints() {
         List<Vector3> localPoints = getLocalPoints();
         List<Vector3> globalPoints = new ArrayList<>(localPoints.size());
         for (int i = 0; i < localPoints.size(); i++) {
-            globalPoints.set(i,translateToGlobal(localPoints.get(i)));
+            globalPoints.add(translateToGlobal(localPoints.get(i)));
         }
         return globalPoints;
     }
+
     public List<Vector3> getLocalPoints();
 
-    public default List<Float> projection(Vector3 axis){
+    public default List<Float> projection(Vector3 axis) {
         axis = axis.normalize();
         List<Float> projections = new ArrayList<>(8);
         List<Vector3> points = getGlobalPoints();
