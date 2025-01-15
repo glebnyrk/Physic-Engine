@@ -12,6 +12,12 @@ public interface HitBox extends AABLike, OrientationReturn {
     public default boolean collidesWith(HitBox other){
         return GJK.gjk(this,other) != null;
     }
+    public default Vector3 collideMeta(HitBox other){
+        if(collidesWith(other)){
+            System.out.println("collides");
+        }
+        return Vector3.ZERO; // GJK.epa(this,other);
+    }
 
     /**
      * Быстро проверяет возможность коллизии между ним и other

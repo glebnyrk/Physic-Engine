@@ -1,5 +1,6 @@
 package ru.nyrk.opengl;
 
+import ru.nyrk.maths.Matrix4f;
 import ru.nyrk.opengl.math.Matrix;
 import ru.nyrk.opengl.math.Vector;
 
@@ -107,6 +108,8 @@ public class Object3D {
         transform.values[1][3] = position.values[1];
         transform.values[2][3] = position.values[2];
     }
-
+    public void setRotation(Matrix4f rotation) {
+        transform = Matrix.of(rotation);
+    }
 
 }

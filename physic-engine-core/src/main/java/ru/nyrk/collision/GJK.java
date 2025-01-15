@@ -11,45 +11,24 @@ public final class GJK {
     private GJK() {
     }
 
-    public void epa(HitBox ha, HitBox hb) {
-        Simplex simplex = gjk(ha, hb);
-        if (simplex == null) {
-            return;
-        }
-        List<Vector3> polytope = new ArrayList<>();
-        for (int i = 0; i < simplex.size(); i++) {
-            polytope.add(simplex.get(i));
-        }
-        List<Integer> faces = new ArrayList<>();
-        addFace(faces, 0, 1, 2);
-        addFace(faces, 0, 3, 1);
-        addFace(faces, 0, 2, 3);
-        addFace(faces, 1, 3, 2);
-        Vector3 minNormal;
-        float minDistance = Float.POSITIVE_INFINITY;
-    }
 
-    private void addFace(List<Integer> list, int a, int b, int c) {
-        list.add(a);
-        list.add(b);
-        list.add(c);
-    }
 
     public static Simplex gjk(HitBox hA, HitBox hB) {
         Vector3 support = support(hA, hB, hB.getCenter().sub(hA.getCenter()));
         Simplex simplex = new Simplex();
         simplex.push(support);
+        GJKReturnPojo collisionTest = new GJKReturnPojo();
         Vector3 direction = support.mul(-1);
         while (true) {
             support = support(hA, hB, direction);
-            if (support.scalar(direction) <= 0) {
+            if (support.scalar(direction) < 0) {
                 return null;
             }
             simplex.push(support);
-            GJKReturnPojo collisionTest = nextSimplex(simplex, direction);
+            collisionTest = nextSimplex(simplex, direction);
             simplex = collisionTest.simplex;
-            direction = collisionTest.direction;
-            if (collisionTest.collides) {
+            direction = collisionTest.direction.normalize();
+            if (collisionTest.collides || direction.isZero()) {
                 return simplex;
             }
         }

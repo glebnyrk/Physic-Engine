@@ -3,6 +3,8 @@ package ru.nyrk.maths;
 import org.jetbrains.annotations.NotNull;
 import ru.nyrk.tools.MakesNewObject;
 
+import java.util.Collection;
+
 public class Vector3 {
     public static final Vector3 ZERO = new Vector3(0.0f, 0.0f, 0.0f);
     public static final Vector3 ONE = new Vector3(1f, 1f, 1f);
@@ -20,15 +22,19 @@ public class Vector3 {
     final private float z;
     final private float length;
     final private float squared_length;
-    public static Vector3 random(){
-        return new Vector3(r(),r(),r());
+
+    public static Vector3 random() {
+        return new Vector3(r(), r(), r());
     }
-    public static Vector3 randomAxis(){
-        return new Vector3(r(),r(),r()).normalize();
+
+    public static Vector3 randomAxis() {
+        return new Vector3(r(), r(), r()).normalize();
     }
-    private static float r(){
+
+    private static float r() {
         return (float) Math.random();
     }
+
     public Vector3(float x, float y, float z) {
         this.x = x;
         this.y = y;
@@ -100,7 +106,13 @@ public class Vector3 {
                 z * b.getX() - x * b.getZ(),
                 x * b.getY() - y * b.getX());
     }
-
+    @MakesNewObject
+    public Vector3 cross(Vector3 b) {
+        return mul(b);
+    }
+    public float dot(Vector3 b) {
+        return scalar(b);
+    }
     public float distance(Vector3 b) {
         float xd = x - b.x;
         float yd = y - b.y;
@@ -121,16 +133,17 @@ public class Vector3 {
     public String toString() {
         return "V3(" + x + ", " + y + ", " + z + ")";
     }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Vector3 b) {
-            return equals(b,EPSILON);
+            return equals(b, EPSILON);
         }
         return false;
     }
 
     public boolean equals(Vector3 b, float delta) {
-        return (x <= b.getX() + delta && x >= b.getX() - delta) &&
+        return this == b || (x <= b.getX() + delta && x >= b.getX() - delta) &&
                 (y <= b.getY() + delta && y >= b.getY() - delta) &&
                 (z <= b.getZ() + delta && z >= b.getZ() - delta);
     }
@@ -167,10 +180,34 @@ public class Vector3 {
     public boolean moreThan(Vector3 b) {
         return b.x < x && b.y < y && b.z < z;
     }
-    public boolean isZero(){
-        return x == 0 && y == 0 && z == 0;
+
+    public boolean isZero() {
+        return equals(Vector3.ZERO);
     }
+
     public boolean lessThan(Vector3 b) {
         return b.x > x && b.y > y && b.z > z;
+    }
+    public Vector3 addCollection(Collection<Vector3> collection) {
+        float nx = x;
+        float ny = y;
+        float nz = z;
+        for(Vector3 v : collection) {
+            nx += v.x;
+            ny += v.y;
+            nz += v.z;
+        }
+        return new Vector3(nx, ny, nz);
+    }
+    public Vector3 subCollection(Collection<Vector3> collection) {
+        float nx = x;
+        float ny = y;
+        float nz = z;
+        for(Vector3 v : collection) {
+            nx -= v.x;
+            ny -= v.y;
+            nz -= v.z;
+        }
+        return new Vector3(nx, ny, nz);
     }
 }

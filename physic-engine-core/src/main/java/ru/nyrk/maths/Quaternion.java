@@ -8,7 +8,7 @@ import java.util.Objects;
  * Кватернион
  */
 public class Quaternion {
-    final public static Quaternion ZERO = new Quaternion(0, 1, 0, 0);
+    final public static Quaternion ZERO = new Quaternion(1, 0, 0, 0);
     final private static float rad = (float) Math.PI / 180;
     final private float r;
     final private float i;
@@ -71,8 +71,8 @@ public class Quaternion {
         i = vector.getX();
         j = vector.getY();
         k = vector.getZ();
-        squaredLength = r * r + i * i + j * j + k * k;
-        length = (float) Math.sqrt(squaredLength);
+        squaredLength = vector.lengthSquared();
+        length = vector.length();
     }
 
     /**
@@ -164,10 +164,14 @@ public class Quaternion {
     }
 
     @MakesNewObject
-    public Quaternion rotate(Quaternion b) {
-        return b.mul(this).mul(b.conjugate());
+    public Quaternion fullRotation(Quaternion b) {
+        return b.mul(this).mul(b.back());
+//        return this.mul(b);
     }
-
+    @MakesNewObject
+    public Quaternion rotate(Quaternion b) {
+        return this.mul(b);
+    }
     @MakesNewObject
     public Quaternion rotateX(float angle) {
         return this.rotate(new Quaternion(angle, new Vector3(1, 0, 0)));

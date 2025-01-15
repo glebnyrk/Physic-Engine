@@ -3,6 +3,7 @@ package ru.nyrk;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.nyrk.hitboxes.BoxHitBox;
+import ru.nyrk.hitboxes.HitBox;
 import ru.nyrk.hitboxes.MeshHitBox;
 import ru.nyrk.maths.Vector3;
 import ru.nyrk.orientation_providers.LocalLock;
@@ -10,15 +11,18 @@ import ru.nyrk.orientation_providers.StaticOrientation;
 import ru.nyrk.physics.PhysicsBody;
 import ru.nyrk.physics.PhysicsBodyBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class PhysicsBodyTest {
     private float r(){
         return (float) Math.random() * 10;
     }
     float sqrt = (float) Math.sqrt(3);
     PhysicsBody cube(){
-        MeshHitBox[] hitBoxes = new MeshHitBox[1];
+        List<HitBox> hitBoxes = new ArrayList<>();
         PhysicsBody body = new PhysicsBodyBuilder().setSize(Vector3.ONE).setPos(new Vector3(r(),r(),r())).setHitBoxes(hitBoxes).createPhysicsBody();
-        hitBoxes[0] = new BoxHitBox(new LocalLock(body, new StaticOrientation()));
+        hitBoxes.add(new BoxHitBox(new LocalLock(body, new StaticOrientation())));
         return body;
     }
     @Test

@@ -33,7 +33,7 @@ public class LocalLock implements OrientationReturn {
 
     @Override
     public Quaternion getRotation() {
-        return orientation.getRotation().rotate(localOrientation.getRotation());
+        return orientation.getRotation().fullRotation(localOrientation.getRotation());
     }
 
 }

@@ -65,4 +65,5 @@ public interface MeshHitBox extends HitBox {
         }
         return maxPoint;
     }
+    public int countPoints();
 }

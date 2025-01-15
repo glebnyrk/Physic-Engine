@@ -4,12 +4,16 @@ import org.junit.jupiter.api.Test;
 import ru.nyrk.BVH.BVHChild;
 import ru.nyrk.BVH.BVHTreePart;
 import ru.nyrk.hitboxes.BoxHitBox;
+import ru.nyrk.hitboxes.HitBox;
 import ru.nyrk.hitboxes.MeshHitBox;
 import ru.nyrk.maths.Vector3;
 import ru.nyrk.orientation_providers.LocalLock;
 import ru.nyrk.orientation_providers.StaticOrientation;
 import ru.nyrk.physics.PhysicsBody;
 import ru.nyrk.physics.PhysicsBodyBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class BVHTreePartTest {
     private float r() {
@@ -50,10 +54,10 @@ class BVHTreePartTest {
     }
 
     private PhysicsBody cube() {
-        MeshHitBox[] hitBoxes = new MeshHitBox[1];
+        List<HitBox> hitBoxes = new ArrayList<>();
         float z = 0.57735026918962576450914878f;
         PhysicsBody body = new PhysicsBodyBuilder().setSize(new Vector3(z, z, z)).setPos(new Vector3(r(), r(), r())).setHitBoxes(hitBoxes).createPhysicsBody();
-        hitBoxes[0] = new BoxHitBox(new LocalLock(body, new StaticOrientation()));
+        hitBoxes.add(new BoxHitBox(new LocalLock(body, new StaticOrientation())));
         return body;
     }
 }

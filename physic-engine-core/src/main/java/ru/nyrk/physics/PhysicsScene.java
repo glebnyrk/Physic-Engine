@@ -1,16 +1,18 @@
 package ru.nyrk.physics;
 
+import org.w3c.dom.ls.LSOutput;
+import ru.nyrk.BVH.BVHTreePart;
 import ru.nyrk.maths.Vector3;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class PhysicsScene implements Runnable {
-    public static final long TARGET_DELAY = 50;
-    public static final int MOVE_QUALITY = 8;
+    public static final long TARGET_DELAY = 10;
     private final ArrayList<PhysicsBody> objects = new ArrayList<>();
     private long last_call = System.nanoTime();
     private boolean running = false;
-
+    private final BVHTreePart tree = new BVHTreePart();
     /**
      * Направление и сила гравитации (ха-ха, ну сделай измерение в котором всё будет падать вверх, это же смешно)
      */
@@ -68,6 +70,7 @@ public abstract class PhysicsScene implements Runnable {
             object.getScene().removeObject(object);
         }
         object.setScene(this);
+        tree.insert(object);
         objects.add(object);
     }
 
@@ -78,20 +81,20 @@ public abstract class PhysicsScene implements Runnable {
      */
     public synchronized final void removeObject(PhysicsBody object) {
         objects.remove(object);
+        tree.parentalDelete(object);
     }
 
     /**
      * Возвращает список объектов на сцене
      */
-    public synchronized final ArrayList<PhysicsBody> getObjects() {
+    public synchronized final List<PhysicsBody> getObjects() {
         return objects;
     }
-
+    public synchronized final PhysicsBody getObject(int index) {return getObjects().get(index);}
     /**
      * Возвращает список объектов которые могли бы пересекаться с object
      */
-    //TODO "заглушка"
-    public synchronized ArrayList<PhysicsBody> getRaws(PhysicsBody object) {
-        return objects;
+    public synchronized List<PhysicsBody> getRaws(PhysicsBody object) {
+        return tree.rawCollides(object);
     }
 }

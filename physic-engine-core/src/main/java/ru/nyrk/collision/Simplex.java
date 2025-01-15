@@ -15,12 +15,16 @@ public class Simplex {
             push(points[i]);
         }
     }
-    public void push(Vector3 point) {
+    public boolean push(Vector3 point) {
+        if (points.contains(point)) {
+            return false;
+        }
         if(size >= 4){
             points.remove(0);
         }
         size++;
         points.add(point);
+        return true;
     }
     public int size() {
         return size;
@@ -41,20 +45,7 @@ public class Simplex {
         }
         return "empty";
     }
-    public Vector3 getNormal(int index){
-        if(size != 4){
-            return null;
-        }
-        Vector3 a = points.get(0);
-        Vector3 b = points.get(1);
-        Vector3 c = points.get(2);
-        Vector3 d = points.get(3);
-        return switch (index){
-            case 0 -> VirtualFace.normal(a, b, c);
-            case 1 -> VirtualFace.normal(b,c,d);
-            case 2 -> VirtualFace.normal(c,d,a);
-            case 3 -> VirtualFace.normal(d,a,b);
-            default -> null;
-        };
+    Vector3 last(){
+        return points.get(points.size()-1);
     }
 }

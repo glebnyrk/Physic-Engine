@@ -79,8 +79,8 @@ class BoxHitboxTest {
     @Test
     void test3() {
         BoxHitBox boxHitbox = new BoxHitBox(Vector3.ZERO);
-        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(-1.78711f, 0, 1.7833f), Vector3.ONE, new Quaternion(45, new Vector3(0, 1, 0)));
-        Assertions.assertFalse(boxHitbox.collidesWith(boxHitbox2));
+        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(-1.78711f, 0, 1.7833f), Vector3.ONE, new Quaternion(0.92388f,0,0,0.382683f));
+        Assertions.assertTrue(boxHitbox.collidesWith(boxHitbox2));
     }
 
     @Test
@@ -99,8 +99,26 @@ class BoxHitboxTest {
 
     @Test
     void falseTest() {
-        BoxHitBox boxHitbox = new BoxHitBox(Vector3.ZERO, new Vector3(1,1.24721f,2.0214f), new Quaternion(0.94974f,-0.136983f,0.26654f,0.090478f));
-        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(-1.73903f, -0.274576f, 0.911562f), new Vector3(0.799887f,0.765903f,0.547655f), new Quaternion(0.686036f,-0.480437f,0.546002f,-0.020421f));
+        BoxHitBox boxHitbox = new BoxHitBox(Vector3.ZERO, new Vector3(1,1.24721f,2.0214f), new Quaternion(0.94974f,-0.136983f,0.26654f,0.090478f).normalize());
+        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(-1.97903f, -0.274576f, 0.911562f), new Vector3(0.799887f,0.765903f,0.547655f), new Quaternion(0.686036f,-0.480437f,0.546002f,-0.020421f).normalize());
         Assertions.assertFalse(boxHitbox.collidesWith(boxHitbox2));
+    }
+    @Test
+    void overlapTest() {
+        BoxHitBox boxHitbox = new BoxHitBox(new Vector3(0, 1.9f, 0));
+        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(0, 0, 0));
+        assertTrue(boxHitbox.collidesWith(boxHitbox2));
+    }
+    @Test
+    void overlapTest2() {
+        BoxHitBox boxHitbox = new BoxHitBox(new Vector3(0, 1f, 0));
+        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(0, 0, 0));
+        assertTrue(boxHitbox.collidesWith(boxHitbox2));
+    }
+    @Test
+    void overlapTest3() {
+        BoxHitBox boxHitbox = new BoxHitBox(new Vector3(0, 0.9f, 0));
+        BoxHitBox boxHitbox2 = new BoxHitBox(new Vector3(0, 0, 0));
+        assertTrue(boxHitbox.collidesWith(boxHitbox2));
     }
 }

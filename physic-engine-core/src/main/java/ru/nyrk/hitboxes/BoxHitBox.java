@@ -6,7 +6,6 @@ import ru.nyrk.orientation_providers.OrientationReturn;
 import ru.nyrk.orientation_providers.StaticOrientation;
 import ru.nyrk.physics.ImpulseCorner;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,9 +73,9 @@ public class BoxHitBox implements MeshHitBox {
         Quaternion xAxis = new Quaternion(new Vector3(1, 0, 0));
         Quaternion yAxis = new Quaternion(new Vector3(0, 1, 0));
         Quaternion zAxis = new Quaternion(new Vector3(0, 0, 1));
-        Vector3 y = new Vector3(yAxis.rotate(getRotation()));
-        Vector3 x = new Vector3(xAxis.rotate(getRotation()));
-        Vector3 z = new Vector3(zAxis.rotate(getRotation()));
+        Vector3 y = new Vector3(yAxis.fullRotation(getRotation()));
+        Vector3 x = new Vector3(xAxis.fullRotation(getRotation()));
+        Vector3 z = new Vector3(zAxis.fullRotation(getRotation()));
         if (!includeInverted) {
             return new Vector3[]{x, y, z};
         } else {
@@ -87,6 +86,11 @@ public class BoxHitBox implements MeshHitBox {
     @Override
     public List<Vector3> getLocalPoints() {
         return points;
+    }
+
+    @Override
+    public int countPoints() {
+        return 8;
     }
 
     private float overlap(float min1, float max1, float min2, float max2) {

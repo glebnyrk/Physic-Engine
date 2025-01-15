@@ -1,5 +1,6 @@
 package ru.nyrk.physics;
 
+import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
 
 import java.util.StringJoiner;
@@ -8,7 +9,7 @@ import java.util.StringJoiner;
  * Карта импульсов для удобной структуризации импульсов
  */
 public final class ImpulseMap {
-    private final Vector3[] impulses = new Vector3[8];
+    private final Vector3[] impulses = new Vector3[]{Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO};
 
     ImpulseMap(Vector3 fffCorner,
                Vector3 fftCorner,
@@ -28,16 +29,12 @@ public final class ImpulseMap {
         impulses[7] = tttCorner;
     }
 
-    public Vector3 getCornerImpulse(ImpulseCorner corner) {
+    public ImpulseMap(Vector3 startImpulse) {
+        add(startImpulse);
+    }
+
+    private Vector3 getCornerImpulse(ImpulseCorner corner) {
         return impulses[corner.ordinal()];
-    }
-
-    public Vector3 getCornerImpulse(int index) {
-        return impulses[index];
-    }
-
-    public void setCornerImpulse(ImpulseCorner corner, Vector3 vector) {
-        impulses[corner.ordinal()] = vector;
     }
 
     public Vector3 getImpulse() {
@@ -51,6 +48,18 @@ public final class ImpulseMap {
                 .add(getCornerImpulse(ImpulseCorner.TTT));
     }
 
+    //TODO
+    public Vector3 getImpulse(Vector3 where) {
+        return getImpulse();
+    }
+    //TODO
+    public void addImpulse(Vector3 where, Vector3 impulse) {
+        add(impulse);
+    }
+    //TODO
+    public Quaternion rotationForce(){
+        return Quaternion.ZERO;
+    }
     /**
      * Добавление карты импульсов к существующей
      */

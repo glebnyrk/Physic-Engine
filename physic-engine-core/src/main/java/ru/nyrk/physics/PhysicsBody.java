@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.nyrk.hitboxes.AABB;
 import ru.nyrk.BVH.BVHChild;
 import ru.nyrk.BVH.BVHTreePart;
+import ru.nyrk.hitboxes.HitBox;
 import ru.nyrk.hitboxes.MeshHitBox;
 import ru.nyrk.maths.Quaternion;
 import ru.nyrk.maths.Vector3;
@@ -20,8 +21,8 @@ import java.util.List;
  * Объект описывающий физический объект на сцене
  */
 public class PhysicsBody implements BVHChild, OrientationReturn {
-    private final ImpulseMap impulse = new ImpulseMap(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO, Vector3.ZERO);
-    private final MeshHitBox[] hitBoxes;
+    private final ImpulseMap impulse = new ImpulseMap(Vector3.ZERO);
+    private final List<HitBox> hitBoxes;
     private float mass;
     private Vector3 position;
     private Quaternion rotation;
@@ -44,16 +45,9 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
     PhysicsBody(Vector3 pos,
                 Quaternion rot,
                 Vector3 sizeN,
-                MeshHitBox[] h,
+                List<HitBox> h,
                 boolean isS,
-                Vector3 impulseFFF,
-                Vector3 impulseFFT,
-                Vector3 impulseFTF,
-                Vector3 impulseFTT,
-                Vector3 impulseTFF,
-                Vector3 impulseTFT,
-                Vector3 impulseTTF,
-                Vector3 impulseTTT,
+                ImpulseMap impulse,
                 Vector3 sizeD) {
         position = pos;
         rotation = rot;
@@ -62,14 +56,7 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
         delta_size = sizeD;
         hitBoxes = h;
         isStatic = isS;
-        impulse.setCornerImpulse(ImpulseCorner.FFF, impulseFFF);
-        impulse.setCornerImpulse(ImpulseCorner.FFT, impulseFFT);
-        impulse.setCornerImpulse(ImpulseCorner.FTF, impulseFTF);
-        impulse.setCornerImpulse(ImpulseCorner.FTT, impulseFTT);
-        impulse.setCornerImpulse(ImpulseCorner.TFF, impulseTFF);
-        impulse.setCornerImpulse(ImpulseCorner.TFT, impulseTFT);
-        impulse.setCornerImpulse(ImpulseCorner.TTF, impulseTTF);
-        impulse.setCornerImpulse(ImpulseCorner.TTT, impulseTTT);
+        this.impulse.add(impulse);
     }
 
     /**
@@ -114,7 +101,7 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
     /**
      * @return массив хитбоксов объекта
      */
-    public @Nullable MeshHitBox[] getHitBoxes() {
+    public @Nullable List<HitBox> getHitBoxes() {
         return hitBoxes;
     }
 
@@ -155,17 +142,21 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
      *
      * @param otherBody объект
      */
-    public final boolean collidesWith(@NotNull PhysicsBody otherBody) {
-        MeshHitBox[] hitBoxes1 = otherBody.getHitBoxes();
-        for (MeshHitBox own : hitBoxes) {
-            for (MeshHitBox other : hitBoxes1) {
-                boolean collide = own.collidesWith(other);
-                if (collide) {
-                    return true;
+    public final Vector3 collidesWith(@NotNull PhysicsBody otherBody) {
+        List<HitBox> hitBoxes1 = otherBody.getHitBoxes();
+        Vector3 _r = Vector3.ZERO;
+        if (otherBody == this) {
+            return _r;
+        }
+        for (HitBox own : hitBoxes) {
+            for (HitBox other : hitBoxes1) {
+                Vector3 collide = own.collideMeta(other);
+                if (collide != null) {
+                    _r = _r.add(collide);
                 }
             }
         }
-        return false;
+        return _r;
     }
 
     /**
@@ -175,24 +166,23 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
      * @return - объект с которым произошло столкновение (возвращает null если коллизий не произошло)
      */
     public @Nullable
-    final PhysicsBody collidesWith(@NotNull Collection<PhysicsBody> other) {
+    final Vector3 collidesWith(@NotNull Collection<PhysicsBody> other) {
+        Vector3 _r = Vector3.ZERO;
         for (PhysicsBody physicsBody : other) {
-            if (collidesWith(physicsBody)) {
-                return physicsBody;
-            }
+            _r = _r.add(collidesWith(physicsBody));
         }
-        return null;
+        return _r;
     }
 
     /**
      * Радиус сферы предварительной проверки коллизий
      */
     public final float rawRadius() {
-        if (hitBoxes == null || hitBoxes.length == 0) {
+        if (hitBoxes == null || hitBoxes.isEmpty()) {
             return 0;
         }
         float maxDistance = 0;
-        for (MeshHitBox hitbox : hitBoxes) {
+        for (HitBox hitbox : hitBoxes) {
             float currentDistance = hitbox.getRawRadius() + hitbox.getCenter().distance(position);
             if (currentDistance > maxDistance) {
                 maxDistance = currentDistance;
@@ -221,10 +211,7 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
      * @param deltaTime - задержка с прошлого вызова в секундах
      */
     public void motionTick(float deltaTime) {
-        boolean collided = safeMove(getImpulse().mul(1f / getMass()), Quaternion.ZERO, deltaTime) != null;
-//        if (collided) {
-//            multiplyImpulse(-1);
-//        }
+        safeMove(getVelocity(),rotation,deltaTime);
     }
 
     /**
@@ -235,7 +222,9 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
     public void addImpulse(Vector3 v) {
         impulse.add(v);
     }
-
+    public Quaternion getRotationForce(){
+        return impulse.rotationForce();
+    }
     /**
      * Умножение импульса на число
      *
@@ -252,15 +241,6 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
      */
     public @NotNull Vector3 getImpulse() {
         return impulse.getImpulse();
-    }
-
-    /**
-     * Получение импульса конкретного угла
-     *
-     * @param corner угол импульс которого нужно получить
-     */
-    public @NotNull Vector3 getImpulse(ImpulseCorner corner) {
-        return impulse.getCornerImpulse(corner);
     }
 
     /**
@@ -285,21 +265,20 @@ public class PhysicsBody implements BVHChild, OrientationReturn {
      * @param deltaTime - задержка с прошлого вызова / время для вычисления дальности сдвига и поворота
      * @return объект с которым произошло столкновение во время движения (если столкновения не произошло, возвращает null)
      */
-    public @Nullable PhysicsBody safeMove(Vector3 velocity, Quaternion rot, float deltaTime) {
-        PhysicsBody _r = null;
-        for (int i = 0; i < PhysicsScene.MOVE_QUALITY; i++) {
-            velocity = velocity.mul(0.5f);
-            move(velocity, rot, deltaTime);
-            PhysicsBody collidesWith = collidesWith(myScene.getRaws(this));
-            if (collidesWith != null) {
-                _r = collidesWith;
-            }
-            boolean collides = collidesWith != null;
-            if (collides) {
-                move(velocity, rot, -deltaTime);
+    public void safeMove(Vector3 velocity, Quaternion rot, float deltaTime) {
+        move(velocity, rot, deltaTime);
+        List<PhysicsBody> raws = myScene.getRaws(this);
+        boolean collision = false;
+        for (PhysicsBody physicsBody : raws) {
+            Vector3 mtv = collidesWith(physicsBody);
+            if (!mtv.equals(Vector3.ZERO)) {
+                position = position.add(mtv);
+                collision = true;
             }
         }
-        return _r;
+        if (collision) {
+            impulse.mul(0);
+        }
     }
     public @NotNull AABB getAABB() {
         return new AABB(List.of(this));
